@@ -70,7 +70,7 @@ CREATE TABLE Rol (
   PRIMARY KEY (id));
 CREATE TABLE TipoAbogado (
   id     int(10) NOT NULL AUTO_INCREMENT,
-  nombre int(10) NOT NULL UNIQUE,
+  nombre varchar(255) NOT NULL UNIQUE,
   PRIMARY KEY (id));
 CREATE TABLE TipoDocumento (
   id     int(10) NOT NULL AUTO_INCREMENT,

@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipoProcesoRepository extends JpaRepository<TipoProceso, Integer> {
+    TipoProceso findByNombre(String nombre);
 }
