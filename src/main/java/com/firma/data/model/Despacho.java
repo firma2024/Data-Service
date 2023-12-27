@@ -21,10 +21,13 @@ public class Despacho {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String url;
 
-    @Column(nullable = false)
-    private LocalDate fechaConsulta;
+    @Column(nullable = true)
+    private LocalDate fechaconsulta;
 
+    public Despacho(String nombre) {
+        this.nombre = nombre;
+    }
 }

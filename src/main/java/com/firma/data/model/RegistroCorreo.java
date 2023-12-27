@@ -23,6 +23,6 @@ public class RegistroCorreo {
     private String correo;
 
     @Column(nullable = false)
-    private LocalTime fechaEnvio;
+    private LocalTime fecha;
 
 }

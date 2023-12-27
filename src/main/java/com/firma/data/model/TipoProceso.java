@@ -18,4 +18,8 @@ public class TipoProceso {
 
     @Column(nullable = false)
     private String nombre;
+
+    public TipoProceso(String nombre) {
+        this.nombre = nombre;
+    }
 }

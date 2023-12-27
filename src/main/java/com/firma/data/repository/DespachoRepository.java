@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DespachoRepository extends JpaRepository<Despacho, Integer> {
+    Despacho findDespachoByNombre(String nombre);
 }

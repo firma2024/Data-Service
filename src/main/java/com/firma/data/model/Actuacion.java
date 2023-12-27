@@ -21,26 +21,26 @@ public class Actuacion {
     @Column(nullable = false)
     private String actuacion;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String anotacion;
 
     @Column(nullable = false)
-    private LocalDate fechaActuacion;
+    private LocalDate fechaactuacion;
 
     @Column(nullable = false)
-    private LocalDate fechaRegistro;
+    private LocalDate fecharegistro;
 
     @Column(nullable = false)
-    private Boolean existeDoc;
+    private Boolean existedoc;
 
     @Column(columnDefinition = "text")
     private String documento;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "Procesoid", nullable = false)
-    private Proceso Procesoid;
+    @JoinColumn(name = "procesoid", nullable = false)
+    private Proceso proceso;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "EstadoActuacionid", nullable = false)
-    private EstadoActuacion EstadoActuacionid;
+    @JoinColumn(name = "estadoactuacionid", nullable = false)
+    private EstadoActuacion estadoactuacion;
 }

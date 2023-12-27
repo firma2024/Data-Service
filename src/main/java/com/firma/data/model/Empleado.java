@@ -9,7 +9,7 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "despacho")
+@Table(name = "empleado")
 public class Empleado {
     @Id
     @Column(nullable = false, updatable = false)
@@ -17,10 +17,10 @@ public class Empleado {
     private Integer id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "Usuarioid", nullable = false)
-    private Usuario Usuarioid;
+    @JoinColumn(name = "usuarioid", nullable = false)
+    private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "Firmaid", nullable = false)
-    private Firma Firmaid;
+    @JoinColumn(name = "firmaid", nullable = false)
+    private Firma firma;
 }

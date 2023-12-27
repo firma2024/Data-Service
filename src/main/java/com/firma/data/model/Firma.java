@@ -24,26 +24,4 @@ public class Firma {
 
     @Column(nullable = false)
     private String direccion;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "abogado",
-            joinColumns = {
-                    @JoinColumn(name = "Usuarioid")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "Firmaid")
-            }
-    )
-    private Set<Usuario> abogados = new HashSet<>();
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "empleados",
-            joinColumns = {
-                    @JoinColumn(name = "Usuarioid")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name = "Firmaid")
-            }
-    )
-    private Set<Usuario> usuariosFirma = new HashSet<>();
 }
