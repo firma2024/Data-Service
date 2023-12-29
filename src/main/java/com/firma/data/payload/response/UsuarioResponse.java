@@ -21,6 +21,7 @@ public class UsuarioResponse {
     private BigInteger telefono;
     private String img;
     private List<String> especialidades;
+    private int numeroProcesosAsignados;
 
     public static List<UsuarioResponse> convertToResponse(List<Usuario> users) {
         List<UsuarioResponse> response = new ArrayList<>();

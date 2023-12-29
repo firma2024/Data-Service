@@ -6,7 +6,9 @@ import com.firma.data.service.intf.IProcesoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ProcesoService implements IProcesoService {
@@ -20,7 +22,7 @@ public class ProcesoService implements IProcesoService {
     }
 
     @Override
-    public List<Proceso> findAllByFirma(Integer firmaId) {
+    public Set<Proceso> findAllByFirma(Integer firmaId) {
         return procesoRepository.findAllByFirma(firmaId);
     }
 
@@ -32,5 +34,15 @@ public class ProcesoService implements IProcesoService {
     @Override
     public Proceso findById(Integer procesoId) {
         return procesoRepository.findById(procesoId).orElse(null);
+    }
+
+    @Override
+    public Proceso updateProceso(Proceso proceso) {
+        return procesoRepository.save(proceso);
+    }
+
+    @Override
+    public Set<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso) {
+        return procesoRepository.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso);
     }
 }

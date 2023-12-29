@@ -24,4 +24,5 @@ public class ProcesoRequest {
     private String ubicacionExpediente;
     private Integer idFirma;
     private Integer idAbogado;
+    private String estadoProceso;
 }

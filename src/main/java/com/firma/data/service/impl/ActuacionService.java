@@ -6,7 +6,9 @@ import com.firma.data.service.intf.IActuacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ActuacionService implements IActuacionService {
@@ -30,7 +32,12 @@ public class ActuacionService implements IActuacionService {
     }
 
     @Override
-    public List<Actuacion> findAllByProceso(Integer procesoId) {
+    public Set<Actuacion> findAllByProceso(Integer procesoId) {
         return actuacionRepository.findAllByProceso(procesoId);
+    }
+
+    @Override
+    public Set<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion) {
+        return actuacionRepository.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion);
     }
 }

@@ -28,4 +28,14 @@ public class DespachoService implements IDespachoService {
     public Despacho findDespachoByNombre(String nombre) {
         return despachoRepository.findDespachoByNombre(nombre);
     }
+
+    @Override
+    public Despacho updateDespacho(Despacho despacho) {
+        return despachoRepository.save(despacho);
+    }
+
+    @Override
+    public Despacho findDespachoById(Integer despachoId) {
+        return despachoRepository.findById(despachoId).orElse(null);
+    }
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class UsuarioService implements IUsuarioService {
@@ -25,7 +26,12 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public List<Usuario> findAllAbogadosByFirma(Integer firmaId, Integer rolId) {
+    public Set<Usuario> findAllAbogadosByFirma(Integer firmaId, Integer rolId) {
         return usuarioRepository.findAllAbogadosByFirma(firmaId, rolId);
+    }
+
+    @Override
+    public int numberAssignedProcesses(Integer usuarioId) {
+        return usuarioRepository.getNumberAssignedProcesses(usuarioId);
     }
 }

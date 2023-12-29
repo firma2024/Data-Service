@@ -8,4 +8,6 @@ public interface IDespachoService {
     Despacho saveDespacho(Despacho despacho);
     List<Despacho> findAllDespachos();
     Despacho findDespachoByNombre(String nombre);
+    Despacho updateDespacho(Despacho despacho);
+    Despacho findDespachoById(Integer despachoId);
 }
