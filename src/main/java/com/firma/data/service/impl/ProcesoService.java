@@ -17,6 +17,11 @@ public class ProcesoService implements IProcesoService {
     private ProcesoRepository procesoRepository;
 
     @Override
+    public Set<Proceso> findAll() {
+        return procesoRepository.findAllProcesos();
+    }
+
+    @Override
     public Proceso saveProceso(Proceso proceso) {
         return procesoRepository.save(proceso);
     }
@@ -29,6 +34,11 @@ public class ProcesoService implements IProcesoService {
     @Override
     public Set<Proceso> findAllByAbogado(Integer abogadoId) {
         return procesoRepository.findAllByAbogado(abogadoId);
+    }
+
+    @Override
+    public Proceso findByRadicado(String radicado) {
+        return procesoRepository.findByRadicado(radicado);
     }
 
     @Override

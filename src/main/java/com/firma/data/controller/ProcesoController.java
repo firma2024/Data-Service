@@ -3,7 +3,6 @@ package com.firma.data.controller;
 import com.firma.data.model.*;
 import com.firma.data.payload.request.ActuacionRequest;
 import com.firma.data.payload.request.ProcesoRequest;
-import com.firma.data.payload.response.ActuacionJefeResponse;
 import com.firma.data.payload.response.ProcesoJefeResponse;
 import com.firma.data.payload.response.ProcesoResponse;
 import com.firma.data.service.intf.*;
@@ -106,6 +105,7 @@ public class ProcesoController {
                         .fechaactuacion(dateActuacion.toLocalDate())
                         .fecharegistro(dateRegistro.toLocalDate())
                         .documento(null)
+                        .enviado('Y')
                         .existedoc(actuacionReq.isExistDocument())
                         .build();
                 actuaciones.add(newActuacion);
@@ -249,6 +249,27 @@ public class ProcesoController {
         }
 
         return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/all")
+    public ResponseEntity <?> getAllProcesos(){
+        Set<Proceso> procesos = procesoService.findAll();
+        List<ProcesoResponse> procesosResponses = new ArrayList<>();
+        for (Proceso proceso : procesos) {
+
+            Actuacion actuacion = actuacionService.findLastActuacion(proceso.getId());
+
+            ProcesoResponse p = ProcesoResponse.builder()
+                    .numeroProceso(proceso.getNumeroproceso())
+                    .numeroRadicado(proceso.getRadicado())
+                    .id(proceso.getId())
+                    .fechaRadicacion(proceso.getFecharadicado().format(formatter))
+                    .fechaUltimaActuacion(actuacion.getFechaactuacion().format(formatter))
+                    .build();
+
+            procesosResponses.add(p);
+        }
+        return new ResponseEntity<>(procesosResponses, HttpStatus.OK);
     }
 
 }

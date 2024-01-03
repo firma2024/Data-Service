@@ -26,4 +26,14 @@ public interface ActuacionRepository extends JpaRepository<Actuacion, Integer> {
             "AND (:fechaFin IS NULL OR a.fechaactuacion <= :fechaFin) " +
             "AND (:estadoActuacion IS NULL OR a.estadoactuacion.nombre = :estadoActuacion) " )
     Set<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion);
+
+    @Query("SELECT a FROM Actuacion a " +
+            "WHERE a.enviado = 'N' ")
+    Set<Actuacion> findAllByNoSend();
+
+    @Query("SELECT a FROM Actuacion a " +
+            "WHERE a.proceso.id = :procesoId " +
+            "ORDER BY a.fechaactuacion DESC " +
+            "LIMIT 1")
+    Actuacion findLastActuacion(Integer procesoId);
 }

@@ -7,6 +7,7 @@ CREATE TABLE Actuacion (
   documento         blob,
   existedoc         bit(1) NOT NULL,
   procesoid         int(10) NOT NULL,
+  enviado           char(255) NOT NULL,
   estadoactuacionid int(10) NOT NULL,
   PRIMARY KEY (id));
 CREATE TABLE Audiencia (
@@ -63,7 +64,7 @@ CREATE TABLE Proceso (
 CREATE TABLE RegistroCorreo (
   id     int(10) NOT NULL AUTO_INCREMENT,
   correo varchar(255) NOT NULL,
-  fecha  time(6) NOT NULL,
+  fecha  datetime NOT NULL,
   PRIMARY KEY (id));
 CREATE TABLE Rol (
   id     int(10) NOT NULL AUTO_INCREMENT,

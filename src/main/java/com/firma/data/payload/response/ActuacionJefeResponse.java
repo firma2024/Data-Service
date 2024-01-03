@@ -2,8 +2,6 @@ package com.firma.data.payload.response;
 
 import lombok.*;
 
-import java.math.BigInteger;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter

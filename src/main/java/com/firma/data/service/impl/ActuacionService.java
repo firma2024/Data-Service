@@ -40,4 +40,19 @@ public class ActuacionService implements IActuacionService {
     public Set<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion) {
         return actuacionRepository.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion);
     }
+
+    @Override
+    public Set<Actuacion> findAllByNoSend() {
+        return actuacionRepository.findAllByNoSend();
+    }
+
+    @Override
+    public Actuacion findById(Integer id) {
+        return actuacionRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public Actuacion findLastActuacion(Integer procesoId) {
+        return actuacionRepository.findLastActuacion(procesoId);
+    }
 }

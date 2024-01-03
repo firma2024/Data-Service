@@ -36,6 +36,9 @@ public class Actuacion {
     @Column(columnDefinition = "text")
     private String documento;
 
+    @Column(nullable = false)
+    private Character enviado;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "procesoid", nullable = false)
     private Proceso proceso;
