@@ -12,10 +12,8 @@ import java.util.Set;
 @Repository
 public interface ActuacionRepository extends JpaRepository<Actuacion, Integer> {
     @Query("SELECT a FROM Actuacion a " +
-            "JOIN Proceso p ON a.proceso.id = p.id " +
-            "JOIN EstadoActuacion ea ON a.estadoactuacion.id = ea.id " +
-            "WHERE p.firma.id = :firmaId AND ea.nombre = 'No visto' ")
-    List<Actuacion> findByNoVisto(Integer firmaId);
+            "WHERE a.proceso.id = :procesoId AND a.estadoactuacion.nombre = 'No visto' ")
+    List<Actuacion> findByNoVisto(Integer procesoId);
 
     @Query("SELECT a FROM Actuacion a " +
             "JOIN Proceso p ON a.proceso.id = p.id " +

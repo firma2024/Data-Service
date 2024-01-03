@@ -5,6 +5,7 @@ import com.firma.data.payload.request.ActuacionRequest;
 import com.firma.data.payload.request.ProcesoRequest;
 import com.firma.data.payload.response.ActuacionJefeResponse;
 import com.firma.data.payload.response.ProcesoJefeResponse;
+import com.firma.data.payload.response.ProcesoResponse;
 import com.firma.data.service.intf.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -42,6 +43,7 @@ public class ProcesoController {
     private IEstadoProcesoService estadoProcesoService;
     @Autowired
     private IEstadoActuacionService estadoActuacionService;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
     @Transactional
@@ -67,9 +69,9 @@ public class ProcesoController {
                 despacho = despachoService.saveDespacho(Despacho.builder().nombre(procesoRequest.getDespacho()).build());
             }
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+            DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-            LocalDateTime dateRadicado = LocalDateTime.parse(procesoRequest.getFechaRadicacion(), formatter);
+            LocalDateTime dateRadicado = LocalDateTime.parse(procesoRequest.getFechaRadicacion(), formatterTime);
 
             EstadoProceso estadoProceso = estadoProcesoService.findByName("Activo");
 
@@ -94,8 +96,8 @@ public class ProcesoController {
             List<Actuacion> actuaciones = new ArrayList<>();
 
             for (ActuacionRequest actuacionReq : procesoRequest.getActuaciones()) {
-                LocalDateTime dateActuacion = LocalDateTime.parse(actuacionReq.getFechaActuacion(), formatter);
-                LocalDateTime dateRegistro = LocalDateTime.parse(actuacionReq.getFechaRegistro(), formatter);
+                LocalDateTime dateActuacion = LocalDateTime.parse(actuacionReq.getFechaActuacion(), formatterTime);
+                LocalDateTime dateRegistro = LocalDateTime.parse(actuacionReq.getFechaRegistro(), formatterTime);
                 Actuacion newActuacion = Actuacion.builder()
                         .proceso(newProceso)
                         .anotacion(actuacionReq.getAnotacion())
@@ -117,14 +119,13 @@ public class ProcesoController {
         }
     }
 
-    @GetMapping("/get/firma")
-    public ResponseEntity<?> getProcesos(@RequestParam Integer firmaId) {
+    @GetMapping("/get/all/firma")
+    public ResponseEntity<?> getProcesosByFirma(@RequestParam Integer firmaId) {
         Set<Proceso> procesos = procesoService.findAllByFirma(firmaId);
         List<ProcesoJefeResponse> responses = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         for (Proceso proceso : procesos) {
             boolean estado = false;
-            List<Actuacion> actuaciones = actuacionService.findByNoVisto(proceso.getFirma().getId());
+            List<Actuacion> actuaciones = actuacionService.findByNoVisto(proceso.getId());
             if (actuaciones.size() > 0) {
                 estado = true;
             }
@@ -148,21 +149,6 @@ public class ProcesoController {
         if (proceso == null) {
             return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
         }
-        Set<Actuacion> actuaciones = actuacionService.findAllByProceso(procesoId);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        List<ActuacionJefeResponse> actuacionesResponse = new ArrayList<>();
-
-        for (Actuacion actuacion : actuaciones) {
-            ActuacionJefeResponse act = ActuacionJefeResponse.builder()
-                    .nombreActuacion(actuacion.getActuacion())
-                    .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
-                    .fechaRegistro(actuacion.getFecharegistro().format(formatter))
-                    .anotacion(actuacion.getAnotacion())
-                    .existDocument(actuacion.getExistedoc())
-                    .estado(actuacion.getEstadoactuacion().getNombre())
-                    .build();
-            actuacionesResponse.add(act);
-        }
 
         ProcesoJefeResponse response = ProcesoJefeResponse.builder()
                 .id(proceso.getId())
@@ -171,7 +157,6 @@ public class ProcesoController {
                 .demandado(proceso.getDemandado())
                 .demandante(proceso.getDemandante())
                 .abogado(proceso.getEmpleado().getUsuario().getNombres())
-                .actuaciones(actuacionesResponse)
                 .estado(proceso.getEstadoproceso().getNombre())
                 .build();
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -226,7 +211,6 @@ public class ProcesoController {
         Set<Proceso> procesosFiltrados = procesoService.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso);
 
         List<ProcesoJefeResponse> responses = new ArrayList<>();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         for (Proceso proceso : procesosFiltrados) {
             boolean estado = false;
@@ -242,6 +226,24 @@ public class ProcesoController {
                     .abogado(proceso.getEmpleado().getUsuario().getNombres())
                     .fechaRadicacion(proceso.getFecharadicado().format(formatter))
                     .estadoVisto(estado)
+                    .build();
+            responses.add(response);
+        }
+
+        return new ResponseEntity<>(responses, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/all/abogado")
+    public ResponseEntity<?> getProcesosAbogado(@RequestParam Integer abogadoId) {
+        Set<Proceso> procesosAbogado = procesoService.findAllByAbogado(abogadoId);
+        List<ProcesoResponse> responses = new ArrayList<>();
+
+        for (Proceso proceso : procesosAbogado) {
+            ProcesoResponse response = ProcesoResponse.builder()
+                    .id(proceso.getId())
+                    .numeroRadicado(proceso.getRadicado())
+                    .tipoProceso(proceso.getTipoproceso().getNombre())
+                    .fechaRadicacion(proceso.getFecharadicado().format(formatter))
                     .build();
             responses.add(response);
         }

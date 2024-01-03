@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
+import java.sql.Blob;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -38,8 +39,9 @@ public class Usuario {
     @Column(nullable = false)
     private String correo;
 
-    @Column(columnDefinition = "text")
-    private String img;
+    @Lob
+    @Column(nullable = true,length = 1000)
+    private byte[] img;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "rolid", nullable = false)

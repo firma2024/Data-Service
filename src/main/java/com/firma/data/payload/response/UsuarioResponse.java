@@ -19,28 +19,7 @@ public class UsuarioResponse {
     private String nombres;
     private String correo;
     private BigInteger telefono;
-    private String img;
+    private BigInteger identificacion;
     private List<String> especialidades;
-    private int numeroProcesosAsignados;
-
-    public static List<UsuarioResponse> convertToResponse(List<Usuario> users) {
-        List<UsuarioResponse> response = new ArrayList<>();
-        for (Usuario user : users) {
-            List<String> especialidades = new ArrayList<>();
-
-            for(TipoAbogado tipoAbogado : user.getEspecialidadesAbogado()){
-                especialidades.add(tipoAbogado.getNombre());
-            }
-
-            response.add(UsuarioResponse.builder()
-                    .id(user.getId())
-                    .nombres(user.getNombres())
-                    .correo(user.getCorreo())
-                    .telefono(user.getTelefono())
-                    .img(user.getImg())
-                    .especialidades(especialidades)
-                    .build());
-        }
-        return response;
-    }
+    private Integer numeroProcesosAsignados;
 }

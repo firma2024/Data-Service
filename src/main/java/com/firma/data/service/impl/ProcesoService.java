@@ -27,8 +27,8 @@ public class ProcesoService implements IProcesoService {
     }
 
     @Override
-    public List<Proceso> findAllByAbogado(Integer abogadoId) {
-        return null;
+    public Set<Proceso> findAllByAbogado(Integer abogadoId) {
+        return procesoRepository.findAllByAbogado(abogadoId);
     }
 
     @Override

@@ -27,8 +27,8 @@ public class ActuacionService implements IActuacionService {
     }
 
     @Override
-    public List<Actuacion> findByNoVisto(Integer firmaId) {
-        return actuacionRepository.findByNoVisto(firmaId);
+    public List<Actuacion> findByNoVisto(Integer procesoId) {
+        return actuacionRepository.findByNoVisto(procesoId);
     }
 
     @Override

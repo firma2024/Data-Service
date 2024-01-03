@@ -12,8 +12,7 @@ import java.util.Set;
 @Repository
 public interface ProcesoRepository extends JpaRepository<Proceso, Integer> {
     @Query("SELECT p FROM Proceso p " +
-            "JOIN EstadoProceso ep ON p.estadoproceso.id = ep.id " +
-            "WHERE p.firma.id = :firmaId AND ep.nombre = 'Retirado' ")
+            "WHERE p.firma.id = :firmaId AND p.estadoproceso.nombre != 'Retirado' ")
     Set<Proceso> findAllByFirma(Integer firmaId);
 
     @Query("SELECT p FROM Proceso p WHERE " +
@@ -22,4 +21,10 @@ public interface ProcesoRepository extends JpaRepository<Proceso, Integer> {
             "AND (:estadosProceso IS NULL OR p.estadoproceso.nombre IN :estadosProceso) " +
             "AND (:tipoProceso IS NULL OR p.tipoproceso.nombre = :tipoProceso)")
     Set<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso);
+
+    @Query("SELECT p FROM Proceso p " +
+            "JOIN Empleado e ON p.empleado.id = e.id " +
+            "JOIN Usuario u ON e.usuario.id = u.id " +
+            "WHERE u.id = :abogadoId AND p.estadoproceso.nombre != 'Retirado' ")
+    Set<Proceso> findAllByAbogado(Integer abogadoId);
 }

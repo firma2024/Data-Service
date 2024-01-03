@@ -21,5 +21,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
             "INNER JOIN usuario u ON u.id = e.usuarioid " +
             "WHERE u.id = :userId " +
             "GROUP BY u.id", nativeQuery = true)
-    int getNumberAssignedProcesses(int userId);
+    Integer getNumberAssignedProcesses(int userId);
 }

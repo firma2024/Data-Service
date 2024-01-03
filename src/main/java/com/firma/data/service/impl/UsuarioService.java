@@ -16,6 +16,21 @@ public class UsuarioService implements IUsuarioService {
     private UsuarioRepository usuarioRepository;
 
     @Override
+    public Usuario save(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public Usuario update(Usuario usuario) {
+        return usuarioRepository.save(usuario);
+    }
+
+    @Override
+    public Usuario findById(Integer id) {
+        return usuarioRepository.findById(id).orElse(null);
+    }
+
+    @Override
     public List<Usuario> findAll() {
         return null;
     }
@@ -31,7 +46,7 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public int numberAssignedProcesses(Integer usuarioId) {
+    public Integer numberAssignedProcesses(Integer usuarioId) {
         return usuarioRepository.getNumberAssignedProcesses(usuarioId);
     }
 }

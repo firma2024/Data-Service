@@ -1,9 +1,12 @@
 package com.firma.data.controller;
 
 import com.firma.data.model.Actuacion;
+import com.firma.data.model.Proceso;
 import com.firma.data.payload.response.ActuacionJefeResponse;
 import com.firma.data.service.intf.IActuacionService;
+import com.firma.data.service.intf.IProcesoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +25,9 @@ public class ActuacionController {
 
     @Autowired
     private IActuacionService actuacionService;
+    @Autowired
+    private IProcesoService procesoService;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @GetMapping("/jefe/actuaciones/filter")
     public ResponseEntity<?> getActuacionesFilter(@RequestParam Integer procesoId,
@@ -55,5 +61,29 @@ public class ActuacionController {
         }
 
         return ResponseEntity.ok(actuacionesResponse);
+    }
+
+    @GetMapping("/jefe/actuaciones")
+    public ResponseEntity <?> getActuacionesByProceso(@RequestParam Integer procesoId){
+        Proceso proceso = procesoService.findById(procesoId);
+        if (proceso == null) {
+            return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
+        }
+        Set<Actuacion> actuaciones = actuacionService.findAllByProceso(procesoId);
+        List<ActuacionJefeResponse> actuacionesResponse = new ArrayList<>();
+
+        for (Actuacion actuacion : actuaciones) {
+            ActuacionJefeResponse act = ActuacionJefeResponse.builder()
+                    .nombreActuacion(actuacion.getActuacion())
+                    .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
+                    .fechaRegistro(actuacion.getFecharegistro().format(formatter))
+                    .anotacion(actuacion.getAnotacion())
+                    .existDocument(actuacion.getExistedoc())
+                    .estado(actuacion.getEstadoactuacion().getNombre())
+                    .build();
+            actuacionesResponse.add(act);
+        }
+
+        return new ResponseEntity<>(actuacionesResponse, HttpStatus.OK);
     }
 }
