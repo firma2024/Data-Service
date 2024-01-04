@@ -2,6 +2,7 @@ package com.firma.data.service.impl;
 
 import com.firma.data.model.Actuacion;
 import com.firma.data.model.Usuario;
+import com.firma.data.payload.response.FileResponse;
 import com.firma.data.service.intf.IActuacionService;
 import com.firma.data.service.intf.IStorageService;
 import com.firma.data.service.intf.IUsuarioService;
@@ -63,7 +64,7 @@ public class StorageService implements IStorageService {
     }
 
     @Override
-    public byte[] downloadAllDocuments(Integer procesoId) throws IOException {
+    public FileResponse downloadAllDocuments(Integer procesoId) throws IOException {
         Set<Actuacion> actuaciones = actuacionService.findAllByProcesoAndDocument(procesoId);
         String radicado = null;
 
@@ -103,6 +104,9 @@ public class StorageService implements IStorageService {
         zipOut.close();
         FileUtils.deleteDirectory(tempFolder);
 
-        return FileUtils.readFileToByteArray(zipFile);
+        return FileResponse.builder()
+                .file(FileUtils.readFileToByteArray(zipFile))
+                .fileName("providencias_" + radicado + ".zip")
+                .build();
     }
 }

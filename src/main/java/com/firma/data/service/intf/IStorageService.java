@@ -1,5 +1,6 @@
 package com.firma.data.service.intf;
 
+import com.firma.data.payload.response.FileResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
@@ -10,5 +11,5 @@ public interface IStorageService {
     public byte[] downloadImage(Integer userId);
     String uploadDocument(MultipartFile file, Integer actuacionId) throws IOException;
     public byte[] downloadDocument(Integer actuacionId);
-    public byte[] downloadAllDocuments(Integer procesoId) throws IOException;
+    public FileResponse downloadAllDocuments(Integer procesoId) throws IOException;
 }

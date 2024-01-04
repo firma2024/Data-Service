@@ -7,6 +7,7 @@ import com.firma.data.model.RegistroCorreo;
 import com.firma.data.payload.request.ActuacionRequest;
 import com.firma.data.payload.response.ActuacionJefeResponse;
 import com.firma.data.payload.response.ActuacionResponse;
+import com.firma.data.payload.response.FileResponse;
 import com.firma.data.service.intf.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -139,6 +140,7 @@ public class ActuacionController {
                     .radicado(actuacion.getProceso().getRadicado())
                     .anotacion(actuacion.getAnotacion())
                     .emailAbogado(actuacion.getProceso().getEmpleado().getUsuario().getCorreo())
+                    .nameAbogado(actuacion.getProceso().getEmpleado().getUsuario().getNombres())
                     .build();
             actuacionesResponse.add(res);
         }
@@ -227,11 +229,11 @@ public class ActuacionController {
     @GetMapping("/dowload/all/documents")
     public ResponseEntity <?> downloadAllDocuments(@RequestParam Integer procesoId){
         try {
-            byte[] zipBytes = storageService.downloadAllDocuments(procesoId);
+            FileResponse fileResponse = storageService.downloadAllDocuments(procesoId);
             return ResponseEntity.ok()
-                    .contentLength(zipBytes.length)
-                    .header("Content-Disposition", "attachment; filename=\"documents.zip\"")
-                    .body(zipBytes);
+                    .contentLength(fileResponse.getFile().length)
+                    .header("Content-Disposition",  String.format("attachment; filename=\"%s\"", fileResponse.getFileName()))
+                    .body(fileResponse.getFile());
         } catch (IOException e) {
             return new ResponseEntity<>("Error al descargar los documentos", HttpStatus.BAD_REQUEST);
         }

@@ -20,4 +20,5 @@ public class ActuacionResponse {
     private boolean existeDocumento;
     private String tipoProceso;
     private String despacho;
+    private String nameAbogado;
 }
