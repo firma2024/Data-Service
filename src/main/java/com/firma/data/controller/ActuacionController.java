@@ -7,16 +7,18 @@ import com.firma.data.model.RegistroCorreo;
 import com.firma.data.payload.request.ActuacionRequest;
 import com.firma.data.payload.response.ActuacionJefeResponse;
 import com.firma.data.payload.response.ActuacionResponse;
-import com.firma.data.service.intf.IActuacionService;
-import com.firma.data.service.intf.IEstadoActuacionService;
-import com.firma.data.service.intf.IProcesoService;
-import com.firma.data.service.intf.IRegistroCorreoService;
+import com.firma.data.service.intf.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -26,6 +28,7 @@ import java.util.Set;
 
 @Controller
 @RequestMapping("/api/data/actuacion")
+@EnableTransactionManagement
 public class ActuacionController {
 
     @Autowired
@@ -37,12 +40,15 @@ public class ActuacionController {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     @Autowired
     private IRegistroCorreoService registroCorreoService;
+    @Autowired
+    private IStorageService storageService;
 
     @GetMapping("/jefe/actuaciones/filter")
     public ResponseEntity<?> getActuacionesFilter(@RequestParam Integer procesoId,
                                                   @RequestParam(required = false) String fechaInicioStr,
                                                   @RequestParam(required = false) String fechaFinStr,
-                                                  @RequestParam(required = false) String estadoActuacion){
+                                                  @RequestParam(required = false) String estadoActuacion,
+                                                  @RequestParam(required = false) boolean existDocument){
 
         LocalDate fechaInicio = null;
         LocalDate fechaFin = null;
@@ -53,7 +59,7 @@ public class ActuacionController {
         if (fechaFinStr != null && !fechaFinStr.isEmpty()) {
             fechaFin = LocalDate.parse(fechaFinStr);
         }
-        Set<Actuacion> actuacionesFilter = actuacionService.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion);
+        Set<Actuacion> actuacionesFilter = actuacionService.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion, existDocument);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<ActuacionJefeResponse> actuacionesResponse = new ArrayList<>();
         
@@ -157,5 +163,77 @@ public class ActuacionController {
             registroCorreoService.save(reg);
         }
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/abogado/all")
+    public ResponseEntity <?> getAllActuacionesByProcesoAbogado(@RequestParam Integer procesoId){
+        Set<Actuacion> actuaciones = actuacionService.findAllByProceso(procesoId);
+        List<ActuacionResponse> actuacionesResponse = new ArrayList<>();
+        for (Actuacion actuacion : actuaciones){
+            ActuacionResponse res = ActuacionResponse.builder()
+                    .id(actuacion.getId())
+                    .actuacion(actuacion.getActuacion())
+                    .anotacion(actuacion.getAnotacion())
+                    .existeDocumento(actuacion.getExistedoc())
+                    .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
+                    .fechaRegistro(actuacion.getFecharegistro().format(formatter))
+                    .build();
+            actuacionesResponse.add(res);
+        }
+        return new ResponseEntity<>(actuacionesResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity <?> getAudiencia(@RequestParam Integer id){
+        Actuacion actuacion = actuacionService.findById(id);
+        if (actuacion == null) {
+            return new ResponseEntity<>("Actuacion no encontrada", HttpStatus.NOT_FOUND);
+        }
+        ActuacionResponse res = ActuacionResponse.builder()
+                .id(actuacion.getId())
+                .demandado(actuacion.getProceso().getDemandado())
+                .demandante(actuacion.getProceso().getDemandante())
+                .despacho(actuacion.getProceso().getDespacho().getNombre())
+                .tipoProceso(actuacion.getProceso().getTipoproceso().getNombre())
+                .actuacion(actuacion.getActuacion())
+                .anotacion(actuacion.getAnotacion())
+                .existeDocumento(actuacion.getExistedoc())
+                .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
+                .fechaRegistro(actuacion.getFecharegistro().format(formatter))
+                .existeDocumento(actuacion.getExistedoc())
+                .build();
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @Transactional
+    @PostMapping("/upload/document")
+    public ResponseEntity <?> uploadDocument(@RequestParam("doc") MultipartFile file, @RequestParam Integer actuacionId){
+        try {
+            storageService.uploadDocument(file, actuacionId);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Error al subir el documento", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/download/document")
+    public ResponseEntity <?> downloadDocument(@RequestParam Integer actuacionId){
+        byte[] document = storageService.downloadDocument(actuacionId);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(document);
+    }
+
+    @GetMapping("/dowload/all/documents")
+    public ResponseEntity <?> downloadAllDocuments(@RequestParam Integer procesoId){
+        try {
+            byte[] zipBytes = storageService.downloadAllDocuments(procesoId);
+            return ResponseEntity.ok()
+                    .contentLength(zipBytes.length)
+                    .header("Content-Disposition", "attachment; filename=\"documents.zip\"")
+                    .body(zipBytes);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Error al descargar los documentos", HttpStatus.BAD_REQUEST);
+        }
     }
 }

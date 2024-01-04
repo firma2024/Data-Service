@@ -4,7 +4,7 @@ CREATE TABLE Actuacion (
   anotacion         varchar(255),
   fechaactuacion    date NOT NULL,
   fecharegistro     date NOT NULL,
-  documento         blob,
+  documento         longblob,
   existedoc         bit(1) NOT NULL,
   procesoid         int(10) NOT NULL,
   enviado           char(255) NOT NULL,

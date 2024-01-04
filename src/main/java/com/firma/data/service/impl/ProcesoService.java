@@ -42,6 +42,16 @@ public class ProcesoService implements IProcesoService {
     }
 
     @Override
+    public Set<Proceso> findAllByFirmaAndEstado(Integer firmaId, String estadoProceso) {
+        return procesoRepository.findAllByFirmaAndEstado(firmaId, estadoProceso);
+    }
+
+    @Override
+    public Set<Proceso> findAllByAbogadoAndEstado(Integer abogadoId, String name) {
+        return procesoRepository.findAllByAbogadoAndEstado(abogadoId, name);
+    }
+
+    @Override
     public Proceso findById(Integer procesoId) {
         return procesoRepository.findById(procesoId).orElse(null);
     }

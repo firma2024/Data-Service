@@ -38,4 +38,9 @@ public class DespachoService implements IDespachoService {
     public Despacho findDespachoById(Integer despachoId) {
         return despachoRepository.findById(despachoId).orElse(null);
     }
+
+    @Override
+    public Despacho findDespachoByProceso(Integer procesoId) {
+        return despachoRepository.findDespachoByProceso(procesoId);
+    }
 }

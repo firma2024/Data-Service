@@ -37,8 +37,13 @@ public class ActuacionService implements IActuacionService {
     }
 
     @Override
-    public Set<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion) {
-        return actuacionRepository.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion);
+    public Set<Actuacion> findAllByProcesoAndDocument(Integer procesoId) {
+        return actuacionRepository.findAllByProcesoAndDocument(procesoId);
+    }
+
+    @Override
+    public Set<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, boolean existDocument) {
+        return actuacionRepository.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion, existDocument);
     }
 
     @Override
@@ -54,5 +59,10 @@ public class ActuacionService implements IActuacionService {
     @Override
     public Actuacion findLastActuacion(Integer procesoId) {
         return actuacionRepository.findLastActuacion(procesoId);
+    }
+
+    @Override
+    public Actuacion update(Actuacion actuacion) {
+        return actuacionRepository.save(actuacion);
     }
 }

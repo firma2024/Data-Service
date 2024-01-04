@@ -24,8 +24,9 @@ public interface ActuacionRepository extends JpaRepository<Actuacion, Integer> {
             "WHERE a.proceso.id = :procesoId " +
             "AND (:fechaInicio IS NULL OR a.fechaactuacion >= :fechaInicio) " +
             "AND (:fechaFin IS NULL OR a.fechaactuacion <= :fechaFin) " +
-            "AND (:estadoActuacion IS NULL OR a.estadoactuacion.nombre = :estadoActuacion) " )
-    Set<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion);
+            "AND (:estadoActuacion IS NULL OR a.estadoactuacion.nombre = :estadoActuacion) " +
+            "AND (:existDocument IS NULL OR a.existedoc = :existDocument) " )
+    Set<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, boolean existDocument);
 
     @Query("SELECT a FROM Actuacion a " +
             "WHERE a.enviado = 'N' ")
@@ -36,4 +37,8 @@ public interface ActuacionRepository extends JpaRepository<Actuacion, Integer> {
             "ORDER BY a.fechaactuacion DESC " +
             "LIMIT 1")
     Actuacion findLastActuacion(Integer procesoId);
+
+    @Query("SELECT a FROM Actuacion a " +
+            "WHERE a.proceso.id = :procesoId AND a.existedoc = true AND a.existedoc IS NOT NULL")
+    Set<Actuacion> findAllByProcesoAndDocument(Integer procesoId);
 }

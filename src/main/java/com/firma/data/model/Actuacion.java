@@ -32,9 +32,9 @@ public class Actuacion {
 
     @Column(nullable = false)
     private Boolean existedoc;
-
-    @Column(columnDefinition = "text")
-    private String documento;
+    @Lob
+    @Column(nullable = true, length = 1000000)
+    private byte[] documento;
 
     @Column(nullable = false)
     private Character enviado;

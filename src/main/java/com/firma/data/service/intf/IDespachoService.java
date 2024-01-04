@@ -10,4 +10,6 @@ public interface IDespachoService {
     Despacho findDespachoByNombre(String nombre);
     Despacho updateDespacho(Despacho despacho);
     Despacho findDespachoById(Integer despachoId);
+
+    Despacho findDespachoByProceso(Integer procesoId);
 }

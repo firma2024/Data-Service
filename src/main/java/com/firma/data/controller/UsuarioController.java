@@ -159,4 +159,72 @@ public class UsuarioController {
         return new ResponseEntity<>(HttpStatus.OK);
 
     }
+
+    @GetMapping("/get/personal/info/jefe")
+    public ResponseEntity <?> getPersonalInfo (@RequestParam Integer id){
+        Usuario user = usuarioService.findById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+        }
+        UsuarioResponse response = UsuarioResponse.builder()
+                .id(user.getId())
+                .nombres(user.getNombres())
+                .correo(user.getCorreo())
+                .telefono(user.getTelefono())
+                .identificacion(user.getIdentificacion())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/update/personal/info/jefe")
+    public ResponseEntity <?> updatePersonalInfo (@RequestBody UsuarioRequest userRequest, @RequestParam Integer id){
+        Usuario user = usuarioService.findById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+        }
+        user.setNombres(userRequest.getNombres());
+        user.setCorreo(userRequest.getCorreo());
+        user.setTelefono(userRequest.getTelefono());
+        user.setIdentificacion(userRequest.getIdentificacion());
+        usuarioService.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/get/personal/info/abogado")
+    public ResponseEntity <?> getPersonalInfoAbogado (@RequestParam Integer id){
+        Usuario user = usuarioService.findById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+        }
+        List<String> especialidades = new ArrayList<>();
+
+        for(TipoAbogado tipoAbogado : user.getEspecialidadesAbogado()){
+            especialidades.add(tipoAbogado.getNombre());
+        }
+        UsuarioResponse response = UsuarioResponse.builder()
+                .id(user.getId())
+                .nombres(user.getNombres())
+                .correo(user.getCorreo())
+                .telefono(user.getTelefono())
+                .identificacion(user.getIdentificacion())
+                .especialidades(especialidades)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PutMapping("/update/personal/info/abogado")
+    public ResponseEntity <?> updatePersonalInfoAbogado (@RequestBody UsuarioRequest userRequest, @RequestParam Integer id){
+        Usuario user = usuarioService.findById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+        }
+        user.setNombres(userRequest.getNombres());
+        user.setCorreo(userRequest.getCorreo());
+        user.setTelefono(userRequest.getTelefono());
+        user.setIdentificacion(userRequest.getIdentificacion());
+        usuarioService.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

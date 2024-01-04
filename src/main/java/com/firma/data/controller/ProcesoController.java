@@ -3,6 +3,7 @@ package com.firma.data.controller;
 import com.firma.data.model.*;
 import com.firma.data.payload.request.ActuacionRequest;
 import com.firma.data.payload.request.ProcesoRequest;
+import com.firma.data.payload.response.ProcesoAbogadoResponse;
 import com.firma.data.payload.response.ProcesoJefeResponse;
 import com.firma.data.payload.response.ProcesoResponse;
 import com.firma.data.service.intf.*;
@@ -42,6 +43,8 @@ public class ProcesoController {
     private IEstadoProcesoService estadoProcesoService;
     @Autowired
     private IEstadoActuacionService estadoActuacionService;
+    @Autowired
+    private IAudienciaService audienciaService;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
@@ -143,7 +146,7 @@ public class ProcesoController {
         return new ResponseEntity<>(responses, HttpStatus.OK);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/get/jefe")
     public ResponseEntity<?> getProceso(@RequestParam Integer procesoId) {
         Proceso proceso = procesoService.findById(procesoId);
         if (proceso == null) {
@@ -270,6 +273,64 @@ public class ProcesoController {
             procesosResponses.add(p);
         }
         return new ResponseEntity<>(procesosResponses, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/all/estado")
+    public ResponseEntity <?> getAllByEstado(@RequestParam String name, @RequestParam Integer firmaId){
+        Set<Proceso> procesos = procesoService.findAllByFirmaAndEstado(firmaId, name);
+        List<ProcesoResponse> procesosResponses = new ArrayList<>();
+        for (Proceso proceso : procesos) {
+            ProcesoResponse p = ProcesoResponse.builder()
+                    .numeroProceso(proceso.getNumeroproceso())
+                    .numeroRadicado(proceso.getRadicado())
+                    .id(proceso.getId())
+                    .fechaRadicacion(proceso.getFecharadicado().format(formatter))
+                    .build();
+
+            procesosResponses.add(p);
+        }
+        return new ResponseEntity<>(procesosResponses, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/all/estado/abogado")
+    public ResponseEntity <?> getAllByEstadoAbogado(@RequestParam String name, @RequestParam Integer abogadoId){
+        Set<Proceso> procesos = procesoService.findAllByAbogadoAndEstado(abogadoId, name);
+        List<ProcesoResponse> procesosResponses = new ArrayList<>();
+        for (Proceso proceso : procesos) {
+            ProcesoResponse p = ProcesoResponse.builder()
+                    .numeroProceso(proceso.getNumeroproceso())
+                    .numeroRadicado(proceso.getRadicado())
+                    .id(proceso.getId())
+                    .fechaRadicacion(proceso.getFecharadicado().format(formatter))
+                    .build();
+
+            procesosResponses.add(p);
+        }
+        return new ResponseEntity<>(procesosResponses, HttpStatus.OK);
+    }
+
+    @GetMapping("/get/abogado")
+    public ResponseEntity <?> getProcesoAbogado(@RequestParam Integer procesoId){
+        Proceso proceso = procesoService.findById(procesoId);
+        if(proceso == null){
+            return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
+        }
+
+        Set<Audiencia> audiencias = audienciaService.findAllByProceso(procesoId);
+
+        ProcesoAbogadoResponse response = ProcesoAbogadoResponse.builder()
+                .id(proceso.getId())
+                .numeroRadicado(proceso.getRadicado())
+                .tipoProceso(proceso.getTipoproceso().getNombre())
+                .demandado(proceso.getDemandado())
+                .demandante(proceso.getDemandante())
+                .fechaRadicacion(proceso.getFecharadicado().format(formatter))
+                .estado(proceso.getEstadoproceso().getNombre())
+                .audiencias(audiencias)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
 
 }
