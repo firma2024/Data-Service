@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface TipoAbogadoRepository extends JpaRepository<TipoAbogado, Integer> {
+    TipoAbogado findByNombre(String nombre);
 }

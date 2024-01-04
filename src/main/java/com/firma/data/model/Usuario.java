@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigInteger;
+import java.sql.Blob;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +28,9 @@ public class Usuario {
     private String password;
 
     @Column(nullable = false)
+    private String nombres;
+
+    @Column(nullable = false)
     private BigInteger telefono;
 
     @Column(nullable = false)
@@ -35,24 +39,25 @@ public class Usuario {
     @Column(nullable = false)
     private String correo;
 
-    @Column(columnDefinition = "text")
-    private String img;
+    @Lob
+    @Column(nullable = true,length = 1000)
+    private byte[] img;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "Rolid", nullable = false)
-    private Rol Rolid;
+    @JoinColumn(name = "rolid", nullable = false)
+    private Rol rol;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "TipoDocumentoid", nullable = false)
-    private TipoDocumento TipoDocumentoid;
+    @JoinColumn(name = "tipodocumentoid", nullable = false)
+    private TipoDocumento tipodocumento;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "especialidadabogado",
             joinColumns = {
-                    @JoinColumn(name = "Usuarioid")
+                    @JoinColumn(name = "usuarioid")
             },
             inverseJoinColumns = {
-                    @JoinColumn(name = "TipoAbogadoid")
+                    @JoinColumn(name = "tipoabogadoid")
             }
     )
     private Set<TipoAbogado> especialidadesAbogado = new HashSet<>();

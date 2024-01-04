@@ -1,5 +1,6 @@
 package com.firma.data.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,10 +22,14 @@ public class Despacho {
     @Column(nullable = false)
     private String nombre;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String url;
 
-    @Column(nullable = false)
-    private LocalDate fechaConsulta;
+    @Column(nullable = true)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate fechaconsulta;
 
+    public Despacho(String nombre) {
+        this.nombre = nombre;
+    }
 }

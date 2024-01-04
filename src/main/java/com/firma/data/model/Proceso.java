@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.math.BigInteger;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Entity
 @Builder
@@ -20,10 +21,10 @@ public class Proceso {
     private Integer id;
 
     @Column(nullable = false)
-    private BigInteger radicado;
+    private String radicado;
 
     @Column(nullable = false)
-    private BigInteger numeroProceso;
+    private BigInteger numeroproceso;
 
     @Column(nullable = false)
     private String demandado;
@@ -32,28 +33,32 @@ public class Proceso {
     private String demandante;
 
     @Column(nullable = false)
-    private LocalDate fechaRadicado;
+    private LocalDate fecharadicado;
 
     @Column(nullable = false)
-    private String ubicacionExpediente;
+    private String ubicacionexpediente;
 
     @Column(nullable = false)
     private Character eliminado;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "Despachoid", nullable = false)
-    private Despacho Despachoid;
+    @JoinColumn(name = "despachoid", nullable = false)
+    private Despacho despacho;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "TipoProcesoid", nullable = false)
-    private TipoProceso TipoProcesoid;
+    @JoinColumn(name = "tipoprocesoid", nullable = false)
+    private TipoProceso tipoproceso;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "EstadoProcesoid", nullable = false)
-    private EstadoProceso EstadoProcesoid;
+    @JoinColumn(name = "estadoprocesoid", nullable = false)
+    private EstadoProceso estadoproceso;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "Firmaid", nullable = false)
-    private Firma Firmaid;
+    @JoinColumn(name = "empleadoid", nullable = false)
+    private Empleado empleado;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "firmaid", nullable = false)
+    private Firma firma;
 
 }

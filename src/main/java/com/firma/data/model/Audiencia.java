@@ -21,6 +21,6 @@ public class Audiencia {
     private String enlace;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "Procesoid", nullable = false)
-    private Proceso Procesoid;
+    @JoinColumn(name = "procesoid", nullable = false)
+    private Proceso proceso;
 }

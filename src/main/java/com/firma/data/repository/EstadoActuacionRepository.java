@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EstadoActuacionRepository extends JpaRepository<EstadoActuacion, Integer> {
+    EstadoActuacion findByNombre(String nombre);
 }

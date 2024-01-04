@@ -70,7 +70,7 @@ CREATE TABLE Rol (
   PRIMARY KEY (id));
 CREATE TABLE TipoAbogado (
   id     SERIAL NOT NULL,
-  nombre int4 NOT NULL UNIQUE,
+  nombre varchar(255) NOT NULL UNIQUE,
   PRIMARY KEY (id));
 CREATE TABLE TipoDocumento (
   id     SERIAL NOT NULL,
