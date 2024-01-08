@@ -18,7 +18,7 @@ public class ActuacionService implements IActuacionService {
 
     @Override
     public Actuacion saveActuacion(Actuacion actuacion) {
-        return null;
+        return actuacionRepository.save(actuacion);
     }
 
     @Override

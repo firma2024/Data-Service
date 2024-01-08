@@ -3,6 +3,7 @@ package com.firma.data.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -23,6 +24,6 @@ public class RegistroCorreo {
     private String correo;
 
     @Column(nullable = false)
-    private LocalTime fecha;
+    private LocalDateTime fecha;
 
 }

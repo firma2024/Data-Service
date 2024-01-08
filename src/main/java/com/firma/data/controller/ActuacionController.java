@@ -38,7 +38,7 @@ public class ActuacionController {
     private IProcesoService procesoService;
     @Autowired
     private IEstadoActuacionService estadoActuacionService;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");;
     @Autowired
     private IRegistroCorreoService registroCorreoService;
     @Autowired
@@ -103,19 +103,20 @@ public class ActuacionController {
         return new ResponseEntity<>(actuacionesResponse, HttpStatus.OK);
     }
 
+    @Transactional
     @PostMapping("/save")
     public ResponseEntity <?> saveActuacion(@RequestBody Set <ActuacionRequest> actuacionRequest){
         EstadoActuacion estadoActuacion = estadoActuacionService.findByName("No Visto");
         for (ActuacionRequest ac : actuacionRequest){
             Proceso proceso = procesoService.findByRadicado(ac.getProceso());
             if (proceso == null) {
-                return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Process not found", HttpStatus.NOT_FOUND);
             }
             DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
             Actuacion actuacion = Actuacion.builder()
                     .actuacion(ac.getNombreActuacion())
                     .anotacion(ac.getAnotacion())
-                    .enviado('F')
+                    .enviado('N')
                     .fechaactuacion(LocalDateTime.parse(ac.getFechaActuacion(), formatterTime).toLocalDate())
                     .fecharegistro(LocalDateTime.parse(ac.getFechaRegistro(), formatterTime).toLocalDate())
                     .proceso(proceso)
@@ -124,7 +125,7 @@ public class ActuacionController {
                     .build();
             actuacionService.saveActuacion(actuacion);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Actuaciones have been saved", HttpStatus.OK);
     }
 
     @GetMapping("/get/all/send")
@@ -139,6 +140,7 @@ public class ActuacionController {
                     .actuacion(actuacion.getActuacion())
                     .radicado(actuacion.getProceso().getRadicado())
                     .anotacion(actuacion.getAnotacion())
+                    .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
                     .emailAbogado(actuacion.getProceso().getEmpleado().getUsuario().getCorreo())
                     .nameAbogado(actuacion.getProceso().getEmpleado().getUsuario().getNombres())
                     .build();
@@ -147,24 +149,25 @@ public class ActuacionController {
         return new ResponseEntity<>(actuacionesResponse, HttpStatus.OK);
     }
 
+    @Transactional
     @PutMapping("/update/send")
     public ResponseEntity <?> updateActuacionSend(@RequestBody Set <Integer> actuacionesIds){
         for (Integer actuacionId : actuacionesIds){
             Actuacion actuacion = actuacionService.findById(actuacionId);
             if (actuacion == null) {
-                return new ResponseEntity<>("Actuacion no encontrada", HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>("Actuacion not found", HttpStatus.NOT_FOUND);
             }
-            actuacion.setEnviado('T');
+            actuacion.setEnviado('Y');
             actuacionService.saveActuacion(actuacion);
 
             RegistroCorreo reg = RegistroCorreo.builder()
                     .correo(actuacion.getProceso().getEmpleado().getUsuario().getCorreo())
-                    .fecha(LocalDateTime.now().toLocalTime())
+                    .fecha(LocalDateTime.now())
                     .build();
 
             registroCorreoService.save(reg);
         }
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Sent status updated", HttpStatus.OK);
     }
 
     @GetMapping("/abogado/all")
@@ -189,7 +192,7 @@ public class ActuacionController {
     public ResponseEntity <?> getAudiencia(@RequestParam Integer id){
         Actuacion actuacion = actuacionService.findById(id);
         if (actuacion == null) {
-            return new ResponseEntity<>("Actuacion no encontrada", HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>("Actuacion not found", HttpStatus.NOT_FOUND);
         }
         ActuacionResponse res = ActuacionResponse.builder()
                 .id(actuacion.getId())
@@ -212,8 +215,11 @@ public class ActuacionController {
     public ResponseEntity <?> uploadDocument(@RequestParam("doc") MultipartFile file, @RequestParam Integer actuacionId){
         try {
             storageService.uploadDocument(file, actuacionId);
+            Actuacion ac = actuacionService.findById(actuacionId);
+            ac.setExistedoc(true);
+            actuacionService.saveActuacion(ac);
         } catch (IOException e) {
-            return new ResponseEntity<>("Error al subir el documento", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error to upload file", HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
@@ -235,7 +241,7 @@ public class ActuacionController {
                     .header("Content-Disposition",  String.format("attachment; filename=\"%s\"", fileResponse.getFileName()))
                     .body(fileResponse.getFile());
         } catch (IOException e) {
-            return new ResponseEntity<>("Error al descargar los documentos", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("Error to download documents", HttpStatus.BAD_REQUEST);
         }
     }
 }
