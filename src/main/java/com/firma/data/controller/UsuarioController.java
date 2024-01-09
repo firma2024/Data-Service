@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Controller
+@RestController
 @EnableTransactionManagement
 @RequestMapping("/api/data/usuario")
 public class UsuarioController {

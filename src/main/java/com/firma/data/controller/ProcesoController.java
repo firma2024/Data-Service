@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@Controller
+@RestController
 @EnableTransactionManagement
 @RequestMapping("/api/data/proceso")
 public class ProcesoController {

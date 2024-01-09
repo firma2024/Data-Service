@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-@Controller
+@RestController
 @RequestMapping("/api/data/despacho")
 public class DespachoController {
 
