@@ -20,8 +20,8 @@ public class DespachoService implements IDespachoService {
     }
 
     @Override
-    public List<Despacho> findAllDespachos() {
-        return despachoRepository.findAll();
+    public List<Despacho> findAllDespachosWithOutLink() {
+        return despachoRepository.findAllDespachosWithOutLink();
     }
 
     @Override
