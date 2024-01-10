@@ -28,8 +28,4 @@ public class Despacho {
     @Column(nullable = true)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaconsulta;
-
-    public Despacho(String nombre) {
-        this.nombre = nombre;
-    }
 }

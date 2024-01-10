@@ -20,15 +20,20 @@ public class DespachoController {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateDespacho(@RequestParam Integer despachoId, @RequestBody Despacho despachoUpdate) {
-        Despacho despacho = despachoService.findDespachoById(despachoId);
+    public ResponseEntity<?> updateDespacho(@RequestBody Despacho despachoUpdate) {
+        Despacho despacho = despachoService.findDespachoById(despachoUpdate.getId());
         if (despacho == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         despacho.setFechaconsulta(despachoUpdate.getFechaconsulta());
         despacho.setUrl(despachoUpdate.getUrl());
         despachoService.updateDespacho(despacho);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("despacho updated", HttpStatus.OK);
+    }
+
+    @GetMapping("/get/all/notlink")
+    public ResponseEntity<?> getAllDespachosWithOutLink() {
+        return new ResponseEntity<>(despachoService.findAllDespachosWithOutLink(), HttpStatus.OK);
     }
 
     @GetMapping("/get")
