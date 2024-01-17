@@ -14,6 +14,8 @@ public class ActuacionRequest {
     private String anotacion;
     private String fechaActuacion;
     private String fechaRegistro;
+    private String fechaInicia;
+    private String fechaFinaliza;
     private String proceso;
     private boolean existDocument;
 }

@@ -8,6 +8,8 @@ CREATE TABLE Actuacion (
   existedoc         bit(1) NOT NULL,
   procesoid         int(10) NOT NULL,
   enviado           char(255) NOT NULL,
+  fechainicia       date,
+  fechafinaliza     date,
   estadoactuacionid int(10) NOT NULL,
   PRIMARY KEY (id));
 CREATE TABLE Audiencia (
@@ -18,8 +20,12 @@ CREATE TABLE Audiencia (
 CREATE TABLE Despacho (
   id            int(10) NOT NULL AUTO_INCREMENT,
   nombre        varchar(255) NOT NULL,
+  PRIMARY KEY (id));
+CREATE TABLE Enlace(
+  id            int(10) NOT NULL AUTO_INCREMENT,
   url           varchar(255),
   fechaconsulta date,
+  despachoid    int(10) NOT NULL,
   PRIMARY KEY (id));
 CREATE TABLE Empleado (
   id        int(11) NOT NULL AUTO_INCREMENT,
@@ -108,3 +114,4 @@ ALTER TABLE Empleado ADD CONSTRAINT FKEmpleado820624 FOREIGN KEY (usuarioid) REF
 ALTER TABLE Empleado ADD CONSTRAINT FKEmpleado120068 FOREIGN KEY (firmaid) REFERENCES Firma (id);
 ALTER TABLE EspecialidadAbogado ADD CONSTRAINT FKEspecialid398188 FOREIGN KEY (usuarioid) REFERENCES Usuario (id);
 ALTER TABLE EspecialidadAbogado ADD CONSTRAINT FKEspecialid308023 FOREIGN KEY (tipoabogadoid) REFERENCES TipoAbogado (id);
+ALTER TABLE Enlace ADD CONSTRAINT FKEnlace820624 FOREIGN KEY (despachoid) REFERENCES Despacho (id);

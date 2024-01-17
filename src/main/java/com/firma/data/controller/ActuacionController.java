@@ -1,9 +1,6 @@
 package com.firma.data.controller;
 
-import com.firma.data.model.Actuacion;
-import com.firma.data.model.EstadoActuacion;
-import com.firma.data.model.Proceso;
-import com.firma.data.model.RegistroCorreo;
+import com.firma.data.model.*;
 import com.firma.data.payload.request.ActuacionRequest;
 import com.firma.data.payload.response.ActuacionJefeResponse;
 import com.firma.data.payload.response.ActuacionResponse;
@@ -39,11 +36,13 @@ public class ActuacionController {
     private IProcesoService procesoService;
     @Autowired
     private IEstadoActuacionService estadoActuacionService;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     @Autowired
     private IRegistroCorreoService registroCorreoService;
     @Autowired
     private IStorageService storageService;
+    @Autowired
+    private IEnlaceService enlaceService;
 
     @GetMapping("/jefe/actuaciones/filter")
     public ResponseEntity<?> getActuacionesFilter(@RequestParam Integer procesoId,
@@ -124,6 +123,11 @@ public class ActuacionController {
                     .existedoc(ac.isExistDocument())
                     .estadoactuacion(estadoActuacion)
                     .build();
+
+            if (ac.getFechaInicia() != null && ac.getFechaFinaliza() != null){
+                actuacion.setFechainicia(LocalDateTime.parse(ac.getFechaInicia(), formatterTime).toLocalDate());
+                actuacion.setFechafinaliza(LocalDateTime.parse(ac.getFechaFinaliza(), formatterTime).toLocalDate());
+            }
             actuacionService.saveActuacion(actuacion);
         }
         return new ResponseEntity<>("Actuaciones have been saved", HttpStatus.OK);
@@ -195,6 +199,15 @@ public class ActuacionController {
         if (actuacion == null) {
             return new ResponseEntity<>("Actuacion not found", HttpStatus.NOT_FOUND);
         }
+
+        String link = null;
+
+        if (actuacion.getExistedoc() && actuacion.getDocumento() == null){
+            DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
+            String year = yearFormatter.format(actuacion.getFechaactuacion());
+            link = enlaceService.findByDespachoAndYear(actuacion.getProceso().getDespacho().getId(), year).getUrl();
+        }
+
         ActuacionResponse res = ActuacionResponse.builder()
                 .id(actuacion.getId())
                 .demandado(actuacion.getProceso().getDemandado())
@@ -204,10 +217,14 @@ public class ActuacionController {
                 .actuacion(actuacion.getActuacion())
                 .anotacion(actuacion.getAnotacion())
                 .existeDocumento(actuacion.getExistedoc())
+                .fechaInicia(actuacion.getFechainicia().format(formatter))
+                .fechaFinaliza(actuacion.getFechafinaliza().format(formatter))
                 .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
                 .fechaRegistro(actuacion.getFecharegistro().format(formatter))
                 .existeDocumento(actuacion.getExistedoc())
+                .link(link)
                 .build();
+
         return new ResponseEntity<>(res, HttpStatus.OK);
     }
 
@@ -216,9 +233,6 @@ public class ActuacionController {
     public ResponseEntity <?> uploadDocument(@RequestParam("doc") MultipartFile file, @RequestParam Integer actuacionId){
         try {
             storageService.uploadDocument(file, actuacionId);
-            Actuacion ac = actuacionService.findById(actuacionId);
-            ac.setExistedoc(true);
-            actuacionService.saveActuacion(ac);
         } catch (IOException e) {
             return new ResponseEntity<>("Error to upload file", HttpStatus.BAD_REQUEST);
         }

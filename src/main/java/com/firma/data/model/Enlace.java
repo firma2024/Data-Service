@@ -12,13 +12,21 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "despacho")
-public class Despacho {
+@Table(name = "enlace")
+public class Enlace {
     @Id
     @Column(nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String nombre;
+    @Column(nullable = true)
+    private String url;
+
+    @Column(nullable = true)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate fechaconsulta;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "despachoid", nullable = false)
+    private Despacho despacho;
 }

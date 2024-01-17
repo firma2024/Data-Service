@@ -20,8 +20,8 @@ public class DespachoService implements IDespachoService {
     }
 
     @Override
-    public List<Despacho> findAllDespachosWithOutLink() {
-        return despachoRepository.findAllDespachosWithOutLink();
+    public List<Despacho> findAllDespachosWithOutLinkByYear(String year) {
+        return despachoRepository.findAllDespachosWithOutLinkByYear(year);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.firma.data.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,12 @@ public class Actuacion {
 
     @Column(nullable = false)
     private LocalDate fecharegistro;
+
+    @Column(nullable = true)
+    private LocalDate fechainicia;
+
+    @Column(nullable = true)
+    private LocalDate fechafinaliza;
 
     @Column(nullable = false)
     private Boolean existedoc;
