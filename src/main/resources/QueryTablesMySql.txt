@@ -91,7 +91,6 @@ CREATE TABLE TipoProceso (
 CREATE TABLE Usuario (
   id              int(10) NOT NULL AUTO_INCREMENT,
   username        varchar(255) NOT NULL UNIQUE,
-  password        varchar(255) NOT NULL,
   telefono        bigint(19) NOT NULL UNIQUE,
   identificacion  bigint(19) NOT NULL UNIQUE,
   nombres         varchar(255) NOT NULL,

@@ -25,9 +25,6 @@ public class Usuario {
     private String username;
 
     @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
     private String nombres;
 
     @Column(nullable = false)
