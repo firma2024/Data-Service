@@ -160,6 +160,57 @@ public class UsuarioController {
 
     }
 
+    @Transactional
+    @PostMapping("/add/admin")
+    public ResponseEntity<?> addAdmin(@RequestBody UsuarioRequest userRequest) {
+        TipoDocumento tipoDocumento = tipoDocumentoService.findByName(userRequest.getTipoDocumento());
+        Rol role = roleService.findByName("ADMIN");
+
+        Usuario newUser = Usuario.builder()
+                .nombres(userRequest.getNombres())
+                .correo(userRequest.getCorreo())
+                .username(userRequest.getUsername())
+                .telefono(userRequest.getTelefono())
+                .password(userRequest.getPassword())
+                .identificacion(userRequest.getIdentificacion())
+                .rol(role)
+                .tipodocumento(tipoDocumento)
+                .build();
+
+        usuarioService.save(newUser);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Transactional
+    @PostMapping("/add/jefe")
+    public ResponseEntity<?> addJefe(@RequestBody UsuarioRequest userRequest){
+        TipoDocumento tipoDocumento = tipoDocumentoService.findByName(userRequest.getTipoDocumento());
+        Rol role = roleService.findByName("JEFE");
+
+        Usuario newUser = Usuario.builder()
+                .nombres(userRequest.getNombres())
+                .correo(userRequest.getCorreo())
+                .username(userRequest.getUsername())
+                .telefono(userRequest.getTelefono())
+                .password(userRequest.getPassword())
+                .identificacion(userRequest.getIdentificacion())
+                .rol(role)
+                .tipodocumento(tipoDocumento)
+                .build();
+
+        usuarioService.save(newUser);
+
+        Firma firma = firmaService.findById(userRequest.getFirmaId());
+        Empleado empleado = Empleado.builder()
+                .usuario(newUser)
+                .firma(firma)
+                .build();
+
+        empleadoService.saveEmpleado(empleado);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @GetMapping("/get/personal/info/jefe")
     public ResponseEntity <?> getPersonalInfo (@RequestParam Integer id){
         Usuario user = usuarioService.findById(id);
