@@ -123,6 +123,7 @@ public class UsuarioController {
     @Transactional
     @PostMapping("/add/abogado")
     public ResponseEntity<?> addAbogado(@RequestBody UsuarioRequest userRequest) {
+
         TipoDocumento tipoDocumento = tipoDocumentoService.findByName(userRequest.getTipoDocumento());
         Rol role = roleService.findByName("ABOGADO");
 
@@ -154,9 +155,7 @@ public class UsuarioController {
                 .build();
 
         empleadoService.saveEmpleado(empleado);
-
         return new ResponseEntity<>(HttpStatus.OK);
-
     }
 
     @Transactional
