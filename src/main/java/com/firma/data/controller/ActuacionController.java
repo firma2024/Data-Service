@@ -247,16 +247,8 @@ public class ActuacionController {
                 .body(document);
     }
 
-    @GetMapping("/dowload/all/documents")
+    @GetMapping("/download/all/documents")
     public ResponseEntity <?> downloadAllDocuments(@RequestParam Integer procesoId){
-        try {
-            FileResponse fileResponse = storageService.downloadAllDocuments(procesoId);
-            return ResponseEntity.ok()
-                    .contentLength(fileResponse.getFile().length)
-                    .header("Content-Disposition",  String.format("attachment; filename=\"%s\"", fileResponse.getFileName()))
-                    .body(fileResponse.getFile());
-        } catch (IOException e) {
-            return new ResponseEntity<>("Error to download documents", HttpStatus.BAD_REQUEST);
-        }
+        return new ResponseEntity<>(storageService.downloadAllDocuments(procesoId), HttpStatus.OK);
     }
 }

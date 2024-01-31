@@ -2,12 +2,11 @@ package com.firma.data.service.impl;
 
 import com.firma.data.model.Actuacion;
 import com.firma.data.model.Usuario;
-import com.firma.data.payload.response.FileResponse;
+import com.firma.data.payload.response.ActuacionDocumentResponse;
 import com.firma.data.service.intf.IActuacionService;
 import com.firma.data.service.intf.IStorageService;
 import com.firma.data.service.intf.IUsuarioService;
 import com.firma.data.utils.ImageUtils;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,9 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Service
 public class StorageService implements IStorageService {
@@ -64,49 +63,19 @@ public class StorageService implements IStorageService {
     }
 
     @Override
-    public FileResponse downloadAllDocuments(Integer procesoId) throws IOException {
+    public List<ActuacionDocumentResponse> downloadAllDocuments(Integer procesoId){
         Set<Actuacion> actuaciones = actuacionService.findAllByProcesoAndDocument(procesoId);
-        String radicado = null;
+        List<ActuacionDocumentResponse> documents = new ArrayList<>();
 
-        File tempFolder = new File("temp");
-        if (!tempFolder.exists()) {
-            tempFolder.mkdirs();
-        }
-        File zipFolder = new File("zip");
-        if (!zipFolder.exists()) {
-            zipFolder.mkdirs();
-        }
-
-        // Crear archivos PDF y guardarlos en la carpeta temporal
         for (Actuacion actuacion : actuaciones) {
-            byte[] documentData = ImageUtils.decompressFile(actuacion.getDocumento());
-            File pdfFile = new File(tempFolder, "providencia_" + actuacion.getFechaactuacion().format(formatter) + ".pdf");
-            FileOutputStream fos = new FileOutputStream(pdfFile);
-            radicado = actuacion.getProceso().getRadicado();
-            fos.write(documentData);
-            fos.close();
+            ActuacionDocumentResponse acDoc = ActuacionDocumentResponse.builder()
+                    .document(ImageUtils.decompressFile(actuacion.getDocumento()))
+                    .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
+                    .radicado(actuacion.getProceso().getRadicado())
+                    .build();
+            documents.add(acDoc);
         }
 
-        // Comprimir los archivos PDF en un archivo ZIP
-        File zipFile = new File("zip/providencias_" + radicado + ".zip");
-        ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile));
-
-        for (File pdfFile : tempFolder.listFiles()) {
-            ZipEntry zipEntry = new ZipEntry(pdfFile.getName());
-            zipOut.putNextEntry(zipEntry);
-
-            byte[] bytes = FileUtils.readFileToByteArray(pdfFile);
-            zipOut.write(bytes);
-
-            pdfFile.delete();
-        }
-
-        zipOut.close();
-        FileUtils.deleteDirectory(tempFolder);
-
-        return FileResponse.builder()
-                .file(FileUtils.readFileToByteArray(zipFile))
-                .fileName("providencias_" + radicado + ".zip")
-                .build();
+        return documents;
     }
 }
