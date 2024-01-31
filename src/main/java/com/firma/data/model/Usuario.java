@@ -37,7 +37,7 @@ public class Usuario {
     private String correo;
 
     @Lob
-    @Column(nullable = true,length = 1000)
+    @Column(length = 1000)
     private byte[] img;
 
     @ManyToOne(fetch = FetchType.EAGER)

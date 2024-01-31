@@ -13,7 +13,6 @@ import java.util.Set;
 public class UsuarioRequest {
     private String nombres;
     private String correo;
-    private String password;
     private BigInteger telefono;
     private BigInteger identificacion;
     private String username;
