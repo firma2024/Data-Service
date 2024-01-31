@@ -8,6 +8,7 @@ import com.firma.data.payload.response.ProcesoJefeResponse;
 import com.firma.data.payload.response.ProcesoResponse;
 import com.firma.data.service.intf.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -51,75 +52,79 @@ public class ProcesoController {
     @Transactional
     @PostMapping("/save")
     public ResponseEntity<?> saveProceso(@RequestBody ProcesoRequest procesoRequest) {
-        try {
-            Firma firma = firmaService.findById(procesoRequest.getIdFirma());
-            if (firma == null) {
-                return new ResponseEntity<>("Firma no encontrada", HttpStatus.NOT_FOUND);
-            }
-            Empleado empleado = empleadoService.findEmpleadoByUsuario(procesoRequest.getIdAbogado());
-            if (empleado == null) {
-                return new ResponseEntity<>("Empleado no encontrado", HttpStatus.NOT_FOUND);
-            }
-            TipoProceso tipoProceso = tipoProcesoService.findByName(procesoRequest.getTipoProceso());
+        Firma firma = firmaService.findById(procesoRequest.getIdFirma());
+        if (firma == null) {
+            return new ResponseEntity<>("Firma no encontrada", HttpStatus.NOT_FOUND);
+        }
+        Empleado empleado = empleadoService.findEmpleadoByUsuario(procesoRequest.getIdAbogado());
+        if (empleado == null) {
+            return new ResponseEntity<>("Empleado no encontrado", HttpStatus.NOT_FOUND);
+        }
+        TipoProceso tipoProceso = tipoProcesoService.findByName(procesoRequest.getTipoProceso());
 
-            if (tipoProceso == null) {
-                tipoProceso = tipoProcesoService.saveTipoProceso(TipoProceso.builder().nombre(procesoRequest.getTipoProceso()).build());
-            }
-            Despacho despacho = despachoService.findDespachoByNombre(procesoRequest.getDespacho());
+        if (tipoProceso == null) {
+            tipoProceso = tipoProcesoService.saveTipoProceso(TipoProceso.builder().nombre(procesoRequest.getTipoProceso()).build());
+        }
+        Despacho despacho = despachoService.findDespachoByNombre(procesoRequest.getDespacho());
 
-            if (despacho == null) {
-                despacho = despachoService.saveDespacho(Despacho.builder().nombre(procesoRequest.getDespacho()).build());
-            }
+        if (despacho == null) {
+            despacho = despachoService.saveDespacho(Despacho.builder().nombre(procesoRequest.getDespacho()).build());
+        }
 
-            DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-            LocalDateTime dateRadicado = LocalDateTime.parse(procesoRequest.getFechaRadicacion(), formatterTime);
+        LocalDateTime dateRadicado = LocalDateTime.parse(procesoRequest.getFechaRadicacion(), formatterTime);
 
-            EstadoProceso estadoProceso = estadoProcesoService.findByName("Activo");
+        EstadoProceso estadoProceso = estadoProcesoService.findByName("Activo");
 
-            Proceso newProceso = Proceso.builder()
-                    .radicado(procesoRequest.getNumeroRadicado())
-                    .numeroproceso(procesoRequest.getIdProceso())
-                    .demandado(procesoRequest.getDemandado())
-                    .demandante(procesoRequest.getDemandante())
-                    .fecharadicado(dateRadicado.toLocalDate())
-                    .ubicacionexpediente(procesoRequest.getUbicacionExpediente())
-                    .eliminado('N')
-                    .despacho(despacho)
-                    .tipoproceso(tipoProceso)
-                    .estadoproceso(estadoProceso)
-                    .empleado(empleado)
-                    .firma(firma)
+        Proceso newProceso = Proceso.builder()
+                .radicado(procesoRequest.getNumeroRadicado())
+                .numeroproceso(procesoRequest.getIdProceso())
+                .demandado(procesoRequest.getDemandado())
+                .demandante(procesoRequest.getDemandante())
+                .fecharadicado(dateRadicado.toLocalDate())
+                .ubicacionexpediente(procesoRequest.getUbicacionExpediente())
+                .eliminado('N')
+                .despacho(despacho)
+                .tipoproceso(tipoProceso)
+                .estadoproceso(estadoProceso)
+                .empleado(empleado)
+                .firma(firma)
+                .build();
+
+        newProceso = procesoService.saveProceso(newProceso);
+
+        EstadoActuacion estadoActuacion = estadoActuacionService.findByName("Visto");
+        List<Actuacion> actuaciones = new ArrayList<>();
+
+        for (ActuacionRequest actuacionReq : procesoRequest.getActuaciones()) {
+            LocalDateTime dateActuacion = LocalDateTime.parse(actuacionReq.getFechaActuacion(), formatterTime);
+            LocalDateTime dateRegistro = LocalDateTime.parse(actuacionReq.getFechaRegistro(), formatterTime);
+
+            Actuacion newActuacion = Actuacion.builder()
+                    .proceso(newProceso)
+                    .anotacion(actuacionReq.getAnotacion())
+                    .actuacion(actuacionReq.getNombreActuacion())
+                    .estadoactuacion(estadoActuacion)
+                    .fechaactuacion(dateActuacion.toLocalDate())
+                    .fecharegistro(dateRegistro.toLocalDate())
+                    .documento(null)
+                    .enviado('Y')
+                    .existedoc(actuacionReq.isExistDocument())
                     .build();
 
-            newProceso = procesoService.saveProceso(newProceso);
-
-            EstadoActuacion estadoActuacion = estadoActuacionService.findByName("Visto");
-            List<Actuacion> actuaciones = new ArrayList<>();
-
-            for (ActuacionRequest actuacionReq : procesoRequest.getActuaciones()) {
-                LocalDateTime dateActuacion = LocalDateTime.parse(actuacionReq.getFechaActuacion(), formatterTime);
-                LocalDateTime dateRegistro = LocalDateTime.parse(actuacionReq.getFechaRegistro(), formatterTime);
-                Actuacion newActuacion = Actuacion.builder()
-                        .proceso(newProceso)
-                        .anotacion(actuacionReq.getAnotacion())
-                        .actuacion(actuacionReq.getNombreActuacion())
-                        .estadoactuacion(estadoActuacion)
-                        .fechaactuacion(dateActuacion.toLocalDate())
-                        .fecharegistro(dateRegistro.toLocalDate())
-                        .documento(null)
-                        .enviado('Y')
-                        .existedoc(actuacionReq.isExistDocument())
-                        .build();
-                actuaciones.add(newActuacion);
+            if (actuacionReq.getFechaInicia() != null && actuacionReq.getFechaFinaliza() != null) {
+                LocalDateTime dateInicia = LocalDateTime.parse(actuacionReq.getFechaInicia(), formatterTime);
+                LocalDateTime dateFinaliza = LocalDateTime.parse(actuacionReq.getFechaFinaliza(), formatterTime);
+                newActuacion.setFechainicia(dateInicia.toLocalDate());
+                newActuacion.setFechafinaliza(dateFinaliza.toLocalDate());
             }
 
-            actuacionService.saveAllActuaciones(actuaciones);
-            return new ResponseEntity<>("Proceso almacenado", HttpStatus.NO_CONTENT);
-
-        } catch (Exception e) {
-            return new ResponseEntity<>("Error al almacenar el proceso", HttpStatus.BAD_REQUEST);
+            actuaciones.add(newActuacion);
         }
+
+        actuacionService.saveAllActuaciones(actuaciones);
+        return new ResponseEntity<>("Proceso almacenado", HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/get/all/firma")
