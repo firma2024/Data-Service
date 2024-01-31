@@ -31,7 +31,7 @@ public class FirmaService implements IFirmaService {
     }
 
     @Override
-    public List<Firma> findByName(String name) {
-        return firmaRepository.findByName(name);
+    public Firma findByUser(String name) {
+        return firmaRepository.findByUser(name);
     }
 }

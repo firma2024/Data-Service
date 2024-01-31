@@ -9,5 +9,5 @@ public interface IFirmaService {
     Firma saveFirma(Firma firma);
     List<Firma> findAll();
     Firma findById(Integer id);
-    List<Firma> findByName(String name);
+    Firma findByUser(String name);
 }
