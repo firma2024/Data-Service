@@ -30,11 +30,6 @@ public class ProcesoService implements IProcesoService {
     }
 
     @Override
-    public Set<Proceso> findAllByFirma(Integer firmaId) {
-        return procesoRepository.findAllByFirma(firmaId);
-    }
-
-    @Override
     public Page<Proceso> findAllByAbogado(Integer abogadoId, Integer page, Integer size) {
         Pageable paging = PageRequest.of(page, size);
         return procesoRepository.findAllByAbogado(abogadoId, paging);
@@ -66,8 +61,8 @@ public class ProcesoService implements IProcesoService {
     }
 
     @Override
-    public Page<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso, Integer page, Integer size) {
+    public Page<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso, Integer page, Integer size, Integer firmaId) {
         Pageable paging = PageRequest.of(page, size);
-        return procesoRepository.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso, paging);
+        return procesoRepository.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso, paging, firmaId);
     }
 }

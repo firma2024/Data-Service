@@ -129,30 +129,6 @@ public class ProcesoController {
         return new ResponseEntity<>("Proceso almacenado", HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/get/all/firma")
-    public ResponseEntity<?> getProcesosByFirma(@RequestParam Integer firmaId) {
-        Set<Proceso> procesos = procesoService.findAllByFirma(firmaId);
-        List<ProcesoJefeResponse> responses = new ArrayList<>();
-        for (Proceso proceso : procesos) {
-            boolean estado = false;
-            List<Actuacion> actuaciones = actuacionService.findByNoVisto(proceso.getId());
-            if (actuaciones.size() > 0) {
-                estado = true;
-            }
-            ProcesoJefeResponse response = ProcesoJefeResponse.builder()
-                    .id(proceso.getId())
-                    .numeroRadicado(proceso.getRadicado())
-                    .tipoProceso(proceso.getTipoproceso().getNombre())
-                    .despacho(proceso.getDespacho().getNombre())
-                    .abogado(proceso.getEmpleado().getUsuario().getNombres())
-                    .fechaRadicacion(proceso.getFecharadicado().format(formatter))
-                    .estadoVisto(estado)
-                    .build();
-            responses.add(response);
-        }
-        return new ResponseEntity<>(responses, HttpStatus.OK);
-    }
-
     @GetMapping("/get/jefe")
     public ResponseEntity<?> getProceso(@RequestParam Integer procesoId) {
         Proceso proceso = procesoService.findById(procesoId);
@@ -204,13 +180,14 @@ public class ProcesoController {
         return new ResponseEntity<>("Proceso eliminado", HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/jefe/procesos/filter")
-    public ResponseEntity<?> getProcesosFilter(@RequestParam(required = false) String fechaInicioStr,
-                                               @RequestParam(required = false) String fechaFinStr,
-                                               @RequestParam(required = false) List<String> estadosProceso,
-                                               @RequestParam(required = false) String tipoProceso,
-                                               @RequestParam(defaultValue = "0") Integer page,
-                                               @RequestParam(defaultValue = "2") Integer size) {
+    @GetMapping("/get/all/firma/filter")
+    public ResponseEntity<?> getProcesosByFirmaFilter(@RequestParam(required = false) String fechaInicioStr,
+                                                      @RequestParam Integer firmaId,
+                                                      @RequestParam(required = false) String fechaFinStr,
+                                                      @RequestParam(required = false) List<String> estadosProceso,
+                                                      @RequestParam(required = false) String tipoProceso,
+                                                      @RequestParam(defaultValue = "0") Integer page,
+                                                      @RequestParam(defaultValue = "2") Integer size) {
         LocalDate fechaInicio = null;
         LocalDate fechaFin = null;
 
@@ -220,7 +197,7 @@ public class ProcesoController {
         if (fechaFinStr != null && !fechaFinStr.isEmpty()) {
             fechaFin = LocalDate.parse(fechaFinStr);
         }
-        Page<Proceso> pageProcesosFiltrados = procesoService.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso, page, size);
+        Page<Proceso> pageProcesosFiltrados = procesoService.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso, page, size, firmaId);
 
         List<ProcesoJefeResponse> responses = new ArrayList<>();
 
@@ -281,7 +258,7 @@ public class ProcesoController {
 
     //pendiente
     @GetMapping("/get/all")
-    public ResponseEntity <?> getAllProcesos(){
+    public ResponseEntity<?> getAllProcesos() {
         Set<Proceso> procesos = procesoService.findAll();
         List<ProcesoResponse> procesosResponses = new ArrayList<>();
         for (Proceso proceso : procesos) {
@@ -302,7 +279,7 @@ public class ProcesoController {
     }
 
     @GetMapping("/get/all/estado")
-    public ResponseEntity <?> getAllByEstado(@RequestParam String name, @RequestParam Integer firmaId){
+    public ResponseEntity<?> getAllByEstado(@RequestParam String name, @RequestParam Integer firmaId) {
         Set<Proceso> procesos = procesoService.findAllByFirmaAndEstado(firmaId, name);
         List<ProcesoResponse> procesosResponses = new ArrayList<>();
         for (Proceso proceso : procesos) {
@@ -319,7 +296,7 @@ public class ProcesoController {
     }
 
     @GetMapping("/get/all/estado/abogado")
-    public ResponseEntity <?> getAllByEstadoAbogado(@RequestParam String name, @RequestParam Integer abogadoId){
+    public ResponseEntity<?> getAllByEstadoAbogado(@RequestParam String name, @RequestParam Integer abogadoId) {
         Set<Proceso> procesos = procesoService.findAllByAbogadoAndEstado(abogadoId, name);
         List<ProcesoResponse> procesosResponses = new ArrayList<>();
         for (Proceso proceso : procesos) {
@@ -336,9 +313,9 @@ public class ProcesoController {
     }
 
     @GetMapping("/get/abogado")
-    public ResponseEntity <?> getProcesoAbogado(@RequestParam Integer procesoId){
+    public ResponseEntity<?> getProcesoAbogado(@RequestParam Integer procesoId) {
         Proceso proceso = procesoService.findById(procesoId);
-        if(proceso == null){
+        if (proceso == null) {
             return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
         }
 
