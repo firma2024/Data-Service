@@ -1,6 +1,8 @@
 package com.firma.data.repository;
 
 import com.firma.data.model.Proceso;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -20,13 +22,13 @@ public interface ProcesoRepository extends JpaRepository<Proceso, Integer> {
             "AND (:fechaFin IS NULL OR p.fecharadicado <= :fechaFin) " +
             "AND (:estadosProceso IS NULL OR p.estadoproceso.nombre IN :estadosProceso) " +
             "AND (:tipoProceso IS NULL OR p.tipoproceso.nombre = :tipoProceso)")
-    Set<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso);
+    Page<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso, Pageable pageable);
 
     @Query("SELECT p FROM Proceso p " +
             "JOIN Empleado e ON p.empleado.id = e.id " +
             "JOIN Usuario u ON e.usuario.id = u.id " +
             "WHERE u.id = :abogadoId AND p.estadoproceso.nombre != 'Retirado' ")
-    Set<Proceso> findAllByAbogado(Integer abogadoId);
+    Page<Proceso> findAllByAbogado(Integer abogadoId, Pageable pageable);
 
     Proceso findByRadicado(String radicado);
 

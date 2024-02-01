@@ -1,6 +1,7 @@
 package com.firma.data.service.intf;
 
 import com.firma.data.model.Proceso;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,8 +13,8 @@ public interface IProcesoService {
     Set<Proceso> findAllByFirma(Integer firmaId);
     Proceso findById(Integer procesoId);
     Proceso updateProceso(Proceso proceso);
-    Set<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso);
-    Set<Proceso> findAllByAbogado(Integer abogadoId);
+    Page<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso, Integer page, Integer size);
+    Page<Proceso> findAllByAbogado(Integer abogadoId, Integer page, Integer size);
     Proceso findByRadicado(String radicado);
     Set<Proceso> findAllByFirmaAndEstado(Integer firmaId, String estadoProceso);
 

@@ -4,6 +4,9 @@ import com.firma.data.model.Actuacion;
 import com.firma.data.repository.ActuacionRepository;
 import com.firma.data.service.intf.IActuacionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -32,8 +35,9 @@ public class ActuacionService implements IActuacionService {
     }
 
     @Override
-    public Set<Actuacion> findAllByProceso(Integer procesoId) {
-        return actuacionRepository.findAllByProceso(procesoId);
+    public Page<Actuacion> findAllByProceso(Integer procesoId, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        return actuacionRepository.findAllByProceso(procesoId, paging);
     }
 
     @Override
@@ -42,8 +46,9 @@ public class ActuacionService implements IActuacionService {
     }
 
     @Override
-    public Set<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, boolean existDocument) {
-        return actuacionRepository.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion, existDocument);
+    public Page<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, boolean existDocument, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        return actuacionRepository.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion, existDocument, paging);
     }
 
     @Override

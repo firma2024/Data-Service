@@ -3,9 +3,11 @@ package com.firma.data.controller;
 import com.firma.data.model.*;
 import com.firma.data.payload.request.UsuarioRequest;
 import com.firma.data.payload.response.FirmaUsuariosResponse;
+import com.firma.data.payload.response.PageableResponse;
 import com.firma.data.payload.response.UsuarioResponse;
 import com.firma.data.service.intf.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,10 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @EnableTransactionManagement
@@ -42,15 +41,19 @@ public class UsuarioController {
     private IStorageService storageService;
 
     @GetMapping("/get/abogados")
-    public ResponseEntity<?> getFirmaAbogados(@RequestParam Integer firmaId) {
+    public ResponseEntity<?> getFirmaAbogados(@RequestParam Integer firmaId,
+                                              @RequestParam(defaultValue = "0") Integer page,
+                                              @RequestParam(defaultValue = "2") Integer size) {
+
         Rol role = roleService.findByName("ABOGADO");
-        Set<Usuario> users = usuarioService.findAllAbogadosByFirma(firmaId, role.getId());
-        if (users == null) {
+        Page<Usuario> pageUsers = usuarioService.findAllAbogadosByFirma(firmaId, role.getId(), page, size);
+
+        if (pageUsers == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         List<UsuarioResponse> userResponse = new ArrayList<>();
 
-        for (Usuario user : users) {
+        for (Usuario user : pageUsers.getContent()) {
             Integer number = usuarioService.numberAssignedProcesses(user.getId());
             List<String> especialidades = new ArrayList<>();
 
@@ -68,16 +71,57 @@ public class UsuarioController {
 
         }
 
-        Firma firma = firmaService.findById(firmaId);
-        FirmaUsuariosResponse response = FirmaUsuariosResponse.builder()
-                .id(firma.getId())
-                .nombre(firma.getNombre())
-                .direccion(firma.getDireccion())
-                .usuarios(userResponse)
+        PageableResponse<UsuarioResponse> response = PageableResponse.<UsuarioResponse>builder()
+                .data(userResponse)
+                .currentPage(pageUsers.getNumber() + 1)
+                .totalItems(pageUsers.getTotalElements())
+                .totalPages(pageUsers.getTotalPages())
                 .build();
 
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+
+    @GetMapping("/jefe/abogados/filter")
+    public ResponseEntity<?> getProcesosFilter(@RequestParam(required = false) List<String> especialidades,
+                                               @RequestParam(required = false) Integer numProcesosInicial,
+                                               @RequestParam(required = false) Integer numProcesosFinal,
+                                               @RequestParam(required = false) String sor,
+                                               @RequestParam(defaultValue = "0") Integer page,
+                                               @RequestParam(defaultValue = "2") Integer size){
+
+        Page<Usuario> pageUsers = usuarioService.findAAbogadosByFilter(especialidades, sor, page, size);
+        List<UsuarioResponse> userResponse = new ArrayList<>();
+
+        for (Usuario user : pageUsers.getContent()) {
+            Integer number = usuarioService.numberAssignedProcesses(user.getId());
+            List<String> especialidadesAbogado = new ArrayList<>();
+
+            for(TipoAbogado tipoAbogado : user.getEspecialidadesAbogado()){
+                especialidadesAbogado.add(tipoAbogado.getNombre());
+            }
+            if (number >= numProcesosInicial && number <= numProcesosFinal ) {
+                userResponse.add(UsuarioResponse.builder()
+                        .id(user.getId())
+                        .nombres(user.getNombres())
+                        .correo(user.getCorreo())
+                        .telefono(user.getTelefono())
+                        .especialidades(especialidadesAbogado)
+                        .numeroProcesosAsignados(number)
+                        .build());
+            }
+        }
+
+        PageableResponse<UsuarioResponse> response = PageableResponse.<UsuarioResponse>builder()
+                .data(userResponse)
+                .currentPage(pageUsers.getNumber() + 1)
+                .totalItems(pageUsers.getTotalElements())
+                .totalPages(pageUsers.getTotalPages())
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
     @GetMapping("/get/abogado")
     public ResponseEntity<?> getAbogado(@RequestParam Integer usuarioId) {
