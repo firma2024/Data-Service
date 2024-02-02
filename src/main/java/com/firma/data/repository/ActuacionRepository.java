@@ -19,16 +19,18 @@ public interface ActuacionRepository extends JpaRepository<Actuacion, Integer> {
 
     @Query("SELECT a FROM Actuacion a " +
             "JOIN Proceso p ON a.proceso.id = p.id " +
-            "WHERE p.id = :procesoId")
-    Page<Actuacion> findAllByProceso(Integer procesoId, Pageable pageable);
+            "WHERE p.id = :procesoId " +
+            "AND (:fechaInicio IS NULL OR a.fechaactuacion >= :fechaInicio) " +
+            "AND (:fechaFin IS NULL OR a.fechaactuacion <= :fechaFin) " +
+            "AND (:existeDoc IS NULL OR a.existedoc = :existeDoc) ")
+    Page<Actuacion> findAllByProceso(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, Boolean existeDoc, Pageable pageable);
 
     @Query("SELECT a FROM Actuacion a " +
             "WHERE a.proceso.id = :procesoId " +
             "AND (:fechaInicio IS NULL OR a.fechaactuacion >= :fechaInicio) " +
             "AND (:fechaFin IS NULL OR a.fechaactuacion <= :fechaFin) " +
-            "AND (:estadoActuacion IS NULL OR a.estadoactuacion.nombre = :estadoActuacion) " +
-            "AND (:existDocument IS NULL OR a.existedoc = :existDocument) " )
-    Page<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, boolean existDocument, Pageable pageable);
+            "AND (:estadoActuacion IS NULL OR a.estadoactuacion.nombre = :estadoActuacion) " )
+    Page<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, Pageable pageable);
 
     @Query("SELECT a FROM Actuacion a " +
             "WHERE a.enviado = 'N' ")

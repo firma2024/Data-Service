@@ -229,11 +229,15 @@ public class ProcesoController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/get/all/abogado")
+    @GetMapping("/get/all/abogado/filter")
     public ResponseEntity<?> getProcesosAbogado(@RequestParam Integer abogadoId,
+                                                @RequestParam(required = false) String fechaInicioStr,
+                                                @RequestParam(required = false) String fechaFinStr,
+                                                @RequestParam(required = false) List<String> estadosProceso,
+                                                @RequestParam(required = false) String tipoProceso,
                                                 @RequestParam(defaultValue = "0") Integer page,
                                                 @RequestParam(defaultValue = "2") Integer size) {
-        Page<Proceso> pageProcesosAbogado = procesoService.findAllByAbogado(abogadoId, page, size);
+        Page<Proceso> pageProcesosAbogado = procesoService.findAllByAbogado(abogadoId, fechaInicioStr, fechaFinStr, estadosProceso, tipoProceso, page, size);
         List<ProcesoResponse> responses = new ArrayList<>();
 
         for (Proceso proceso : pageProcesosAbogado.getContent()) {

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,9 +36,9 @@ public class ActuacionService implements IActuacionService {
     }
 
     @Override
-    public Page<Actuacion> findAllByProceso(Integer procesoId, Integer page, Integer size) {
-        Pageable paging = PageRequest.of(page, size);
-        return actuacionRepository.findAllByProceso(procesoId, paging);
+    public Page<Actuacion> findAllByProceso(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, Boolean existeDoc, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("fechaactuacion").descending());
+        return actuacionRepository.findAllByProceso(procesoId, fechaInicio, fechaFin, existeDoc, paging);
     }
 
     @Override
@@ -46,9 +47,9 @@ public class ActuacionService implements IActuacionService {
     }
 
     @Override
-    public Page<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, boolean existDocument, Integer page, Integer size) {
-        Pageable paging = PageRequest.of(page, size);
-        return actuacionRepository.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion, existDocument, paging);
+    public Page<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("fechaactuacion").descending());
+        return actuacionRepository.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion, paging);
     }
 
     @Override

@@ -14,5 +14,5 @@ public interface IUsuarioService {
     Usuario findByName(String name);
     Page<Usuario> findAllAbogadosByFirma(Integer firmaId, Integer rolId, Integer page, Integer size);
     Integer numberAssignedProcesses(Integer usuarioId);
-    Page<Usuario> findAAbogadosByFilter(List<String> especialidades, String sor, Integer page, Integer size);
+    Page<Usuario> findAAbogadosByFilter(List<String> especialidades, Integer page, Integer size);
 }

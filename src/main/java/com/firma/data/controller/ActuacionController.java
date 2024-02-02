@@ -46,12 +46,11 @@ public class ActuacionController {
     @Autowired
     private IEnlaceService enlaceService;
 
-    @GetMapping("/jefe/actuaciones/filter")
+    @GetMapping("/jefe/get/all/filter")
     public ResponseEntity<?> getActuacionesFilter(@RequestParam Integer procesoId,
                                                   @RequestParam(required = false) String fechaInicioStr,
                                                   @RequestParam(required = false) String fechaFinStr,
                                                   @RequestParam(required = false) String estadoActuacion,
-                                                  @RequestParam(required = false) boolean existDocument,
                                                   @RequestParam(defaultValue = "0") Integer page,
                                                   @RequestParam(defaultValue = "2") Integer size){
 
@@ -64,7 +63,7 @@ public class ActuacionController {
         if (fechaFinStr != null && !fechaFinStr.isEmpty()) {
             fechaFin = LocalDate.parse(fechaFinStr);
         }
-        Page<Actuacion> pageActuacionesFilter = actuacionService.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion, existDocument, page, size);
+        Page<Actuacion> pageActuacionesFilter = actuacionService.findByFiltros(procesoId, fechaInicio, fechaFin, estadoActuacion, page, size);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         List<ActuacionJefeResponse> actuacionesResponse = new ArrayList<>();
         
@@ -162,12 +161,25 @@ public class ActuacionController {
         return new ResponseEntity<>("Sent status updated", HttpStatus.OK);
     }
 
-    @GetMapping("/abogado/all")
+    @GetMapping("/get/all/abogado/filter")
     public ResponseEntity <?> getAllActuacionesByProcesoAbogado(@RequestParam Integer procesoId,
+                                                                @RequestParam(required = false) String fechaInicioStr,
+                                                                @RequestParam(required = false) String fechaFinStr,
+                                                                @RequestParam(required = false) Boolean existeDoc,
                                                                 @RequestParam(defaultValue = "0") Integer page,
-                                                               @RequestParam(defaultValue = "2") Integer size){
+                                                                @RequestParam(defaultValue = "2") Integer size){
 
-        Page<Actuacion> pageActuaciones = actuacionService.findAllByProceso(procesoId, page, size);
+        LocalDate fechaInicio = null;
+        LocalDate fechaFin = null;
+
+        if (fechaInicioStr != null && !fechaInicioStr.isEmpty()) {
+            fechaInicio = LocalDate.parse(fechaInicioStr);
+        }
+        if (fechaFinStr != null && !fechaFinStr.isEmpty()) {
+            fechaFin = LocalDate.parse(fechaFinStr);
+        }
+
+        Page<Actuacion> pageActuaciones = actuacionService.findAllByProceso(procesoId, fechaInicio, fechaFin, existeDoc, page, size);
         List<ActuacionResponse> actuacionesResponse = new ArrayList<>();
         for (Actuacion actuacion : pageActuaciones.getContent()){
             ActuacionResponse res = ActuacionResponse.builder()
@@ -191,7 +203,7 @@ public class ActuacionController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/get")
+    @GetMapping("/get/")
     public ResponseEntity <?> getActuacion(@RequestParam Integer id){
         Actuacion actuacion = actuacionService.findById(id);
         if (actuacion == null) {
@@ -215,13 +227,15 @@ public class ActuacionController {
                 .actuacion(actuacion.getActuacion())
                 .anotacion(actuacion.getAnotacion())
                 .existeDocumento(actuacion.getExistedoc())
-                .fechaInicia(actuacion.getFechainicia().format(formatter))
-                .fechaFinaliza(actuacion.getFechafinaliza().format(formatter))
                 .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
                 .fechaRegistro(actuacion.getFecharegistro().format(formatter))
-                .existeDocumento(actuacion.getExistedoc())
                 .link(link)
                 .build();
+
+        if (actuacion.getFechainicia() != null && actuacion.getFechafinaliza() != null){
+            res.setFechaInicia(actuacion.getFechainicia().format(formatter));
+            res.setFechaFinaliza(actuacion.getFechafinaliza().format(formatter));
+        }
 
         return new ResponseEntity<>(res, HttpStatus.OK);
     }

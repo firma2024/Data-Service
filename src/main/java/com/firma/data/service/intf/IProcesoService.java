@@ -13,7 +13,7 @@ public interface IProcesoService {
     Proceso findById(Integer procesoId);
     Proceso updateProceso(Proceso proceso);
     Page<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso, Integer page, Integer size, Integer firmaId);
-    Page<Proceso> findAllByAbogado(Integer abogadoId, Integer page, Integer size);
+    Page<Proceso> findAllByAbogado(Integer abogadoId, String fechaInicioStr, String fechaFinStr, List<String> estadosProceso, String tipoProceso, Integer page, Integer size);
     Proceso findByRadicado(String radicado);
     Set<Proceso> findAllByFirmaAndEstado(Integer firmaId, String estadoProceso);
 

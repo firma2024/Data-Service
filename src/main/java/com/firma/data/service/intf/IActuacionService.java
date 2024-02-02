@@ -11,9 +11,9 @@ public interface IActuacionService {
     Actuacion saveActuacion(Actuacion actuacion);
     List<Actuacion> saveAllActuaciones(List<Actuacion> actuaciones);
     List<Actuacion> findByNoVisto(Integer procesoId);
-    Page<Actuacion> findAllByProceso(Integer procesoId, Integer page, Integer size);
+    Page<Actuacion> findAllByProceso(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, Boolean existeDoc, Integer page, Integer size);
     Set<Actuacion> findAllByProcesoAndDocument(Integer procesoId);
-    Page<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, boolean existDocument, Integer page, Integer size);
+    Page<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, Integer page, Integer size);
     Set <Actuacion> findAllByNoSend();
     Actuacion findById(Integer id);
     Actuacion findLastActuacion(Integer procesoId);

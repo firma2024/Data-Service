@@ -30,9 +30,9 @@ public class ProcesoService implements IProcesoService {
     }
 
     @Override
-    public Page<Proceso> findAllByAbogado(Integer abogadoId, Integer page, Integer size) {
+    public Page<Proceso> findAllByAbogado(Integer abogadoId, String fechaInicioStr, String fechaFinStr, List<String> estadosProceso, String tipoProceso, Integer page, Integer size) {
         Pageable paging = PageRequest.of(page, size);
-        return procesoRepository.findAllByAbogado(abogadoId, paging);
+        return procesoRepository.findAllByAbogado(abogadoId, fechaInicioStr, fechaFinStr, estadosProceso, tipoProceso, paging);
     }
 
     @Override

@@ -23,8 +23,12 @@ public interface ProcesoRepository extends JpaRepository<Proceso, Integer> {
     @Query("SELECT p FROM Proceso p " +
             "JOIN Empleado e ON p.empleado.id = e.id " +
             "JOIN Usuario u ON e.usuario.id = u.id " +
-            "WHERE u.id = :abogadoId AND p.estadoproceso.nombre != 'Retirado' ")
-    Page<Proceso> findAllByAbogado(Integer abogadoId, Pageable pageable);
+            "WHERE u.id = :abogadoId AND p.estadoproceso.nombre != 'Retirado' " +
+            "AND (:fechaInicioStr IS NULL OR p.fecharadicado >= :fechaInicioStr) " +
+            "AND (:fechaFinStr IS NULL OR p.fecharadicado <= :fechaFinStr) " +
+            "AND (:estadosProceso IS NULL OR p.estadoproceso.nombre IN :estadosProceso) " +
+            "AND (:tipoProceso IS NULL OR p.tipoproceso.nombre = :tipoProceso) ")
+    Page<Proceso> findAllByAbogado(Integer abogadoId, String fechaInicioStr, String fechaFinStr, List<String> estadosProceso, String tipoProceso, Pageable pageable);
 
     Proceso findByRadicado(String radicado);
 

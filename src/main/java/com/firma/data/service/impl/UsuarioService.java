@@ -57,14 +57,8 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public Page<Usuario> findAAbogadosByFilter(List<String> especialidades, String sor, Integer page, Integer size) {
-        Pageable paging = null;
-        if (sor.equals("asc")) {
-            paging = PageRequest.of(page, size, Sort.by("nombres").ascending());
-        } else {
-            paging = PageRequest.of(page, size, Sort.by("nombres").descending());
-        }
-
+    public Page<Usuario> findAAbogadosByFilter(List<String> especialidades, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("nombres").ascending());
         return usuarioRepository.findAbogadosByFilter(especialidades , paging);
     }
 }

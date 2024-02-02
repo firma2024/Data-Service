@@ -41,7 +41,10 @@ public class StorageService implements IStorageService {
     @Override
     public byte[] downloadImage(Integer userId) {
         Usuario user = usuarioService.findById(userId);
-        return ImageUtils.decompressFile(user.getImg());
+        if (user.getImg() != null){
+            return ImageUtils.decompressFile(user.getImg());
+        }
+        return null;
     }
 
     @Override

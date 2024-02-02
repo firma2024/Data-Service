@@ -83,14 +83,13 @@ public class UsuarioController {
 
 
     @GetMapping("/jefe/abogados/filter")
-    public ResponseEntity<?> getProcesosFilter(@RequestParam(required = false) List<String> especialidades,
-                                               @RequestParam(required = false) Integer numProcesosInicial,
-                                               @RequestParam(required = false) Integer numProcesosFinal,
-                                               @RequestParam(required = false) String sor,
+    public ResponseEntity<?> getAbogadosFilter(@RequestParam(required = false) List<String> especialidades,
+                                               @RequestParam(defaultValue = "0") Integer numProcesosInicial,
+                                               @RequestParam(defaultValue = "5") Integer numProcesosFinal,
                                                @RequestParam(defaultValue = "0") Integer page,
                                                @RequestParam(defaultValue = "2") Integer size){
 
-        Page<Usuario> pageUsers = usuarioService.findAAbogadosByFilter(especialidades, sor, page, size);
+        Page<Usuario> pageUsers = usuarioService.findAAbogadosByFilter(especialidades, page, size);
         List<UsuarioResponse> userResponse = new ArrayList<>();
 
         for (Usuario user : pageUsers.getContent()) {
