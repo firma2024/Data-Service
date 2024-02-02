@@ -4,6 +4,10 @@ import com.firma.data.model.Usuario;
 import com.firma.data.repository.UsuarioRepository;
 import com.firma.data.service.intf.IUsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -41,12 +45,20 @@ public class UsuarioService implements IUsuarioService {
     }
 
     @Override
-    public Set<Usuario> findAllAbogadosByFirma(Integer firmaId, Integer rolId) {
-        return usuarioRepository.findAllAbogadosByFirma(firmaId, rolId);
+    public Page<Usuario> findAllAbogadosByFirma(Integer firmaId, Integer rolId, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("nombres").ascending());
+        return usuarioRepository.findAllAbogadosByFirma(firmaId, rolId, paging);
     }
 
     @Override
     public Integer numberAssignedProcesses(Integer usuarioId) {
-        return usuarioRepository.getNumberAssignedProcesses(usuarioId);
+        Integer value = usuarioRepository.getNumberAssignedProcesses(usuarioId);
+        return value == null ? 0 : value;
+    }
+
+    @Override
+    public Page<Usuario> findAAbogadosByFilter(List<String> especialidades, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size, Sort.by("nombres").ascending());
+        return usuarioRepository.findAbogadosByFilter(especialidades , paging);
     }
 }

@@ -4,6 +4,9 @@ import com.firma.data.model.Proceso;
 import com.firma.data.repository.ProcesoRepository;
 import com.firma.data.service.intf.IProcesoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,13 +30,9 @@ public class ProcesoService implements IProcesoService {
     }
 
     @Override
-    public Set<Proceso> findAllByFirma(Integer firmaId) {
-        return procesoRepository.findAllByFirma(firmaId);
-    }
-
-    @Override
-    public Set<Proceso> findAllByAbogado(Integer abogadoId) {
-        return procesoRepository.findAllByAbogado(abogadoId);
+    public Page<Proceso> findAllByAbogado(Integer abogadoId, String fechaInicioStr, String fechaFinStr, List<String> estadosProceso, String tipoProceso, Integer page, Integer size) {
+        Pageable paging = PageRequest.of(page, size);
+        return procesoRepository.findAllByAbogado(abogadoId, fechaInicioStr, fechaFinStr, estadosProceso, tipoProceso, paging);
     }
 
     @Override
@@ -62,7 +61,8 @@ public class ProcesoService implements IProcesoService {
     }
 
     @Override
-    public Set<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso) {
-        return procesoRepository.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso);
+    public Page<Proceso> findByFiltros(LocalDate fechaInicio, LocalDate fechaFin, List<String> estadosProceso, String tipoProceso, Integer page, Integer size, Integer firmaId) {
+        Pageable paging = PageRequest.of(page, size);
+        return procesoRepository.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso, paging, firmaId);
     }
 }

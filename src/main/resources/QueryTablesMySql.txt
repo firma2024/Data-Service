@@ -1,7 +1,7 @@
 CREATE TABLE Actuacion (
   id                int(10) NOT NULL AUTO_INCREMENT,
   actuacion         varchar(255) NOT NULL,
-  anotacion         varchar(255),
+  anotacion         varchar(455),
   fechaactuacion    date NOT NULL,
   fecharegistro     date NOT NULL,
   documento         longblob,
