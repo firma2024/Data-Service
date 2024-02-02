@@ -215,7 +215,8 @@ public class ActuacionController {
         if (actuacion.getExistedoc() && actuacion.getDocumento() == null){
             DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
             String year = yearFormatter.format(actuacion.getFechaactuacion());
-            link = enlaceService.findByDespachoAndYear(actuacion.getProceso().getDespacho().getId(), year).getUrl();
+            Enlace e = enlaceService.findByDespachoAndYear(actuacion.getProceso().getDespacho().getId(), year);
+            link = e.getUrl();
         }
 
         ActuacionResponse res = ActuacionResponse.builder()
