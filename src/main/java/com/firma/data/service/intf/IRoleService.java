@@ -10,4 +10,5 @@ public interface IRoleService {
     List<Rol> findAll();
     Rol findByName(String name);
     Rol saveRol(Rol rol);
+    Rol findByUser(String username);
 }

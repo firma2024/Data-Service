@@ -28,4 +28,10 @@ public class RolService implements IRoleService {
     public Rol saveRol(Rol rol) {
         return rolRepository.save(rol);
     }
+
+    @Override
+    public Rol findByUser(String username) {
+
+        return rolRepository.findByUsuario(username);
+    }
 }

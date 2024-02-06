@@ -32,4 +32,13 @@ public class RolController {
         return new ResponseEntity<>(rol, HttpStatus.OK);
     }
 
+    @GetMapping("/get/user")
+    public ResponseEntity<?> getRoleByUser(@RequestParam String username){
+        Rol rol = roleService.findByUser(username);
+        if (rol == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(rol, HttpStatus.OK);
+    }
+
 }
