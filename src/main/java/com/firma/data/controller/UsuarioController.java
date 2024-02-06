@@ -40,6 +40,25 @@ public class UsuarioController {
     @Autowired
     private IStorageService storageService;
 
+
+    @GetMapping("/get/all/names/abogados")
+    public ResponseEntity<?> getAllAbogadosNames(@RequestParam Integer firmaId){
+        List<Usuario> users = usuarioService.findAllNamesAbogadosByFirma(firmaId);
+        if (users == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        List<UsuarioResponse> userResponse = new ArrayList<>();
+
+        for (Usuario user : users) {
+            userResponse.add(UsuarioResponse.builder()
+                    .id(user.getId())
+                    .nombres(user.getNombres())
+                    .build());
+        }
+
+        return new ResponseEntity<>(userResponse, HttpStatus.OK);
+    }
+
     @GetMapping("/get/abogados")
     public ResponseEntity<?> getFirmaAbogados(@RequestParam Integer firmaId,
                                               @RequestParam(defaultValue = "0") Integer page,
@@ -198,7 +217,7 @@ public class UsuarioController {
                 .build();
 
         empleadoService.saveEmpleado(empleado);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Abogado fue creado", HttpStatus.OK);
     }
 
     @Transactional
@@ -250,7 +269,7 @@ public class UsuarioController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    @GetMapping("/get/personal/info/jefe")
+    @GetMapping("/get/info/jefe")
     public ResponseEntity <?> getPersonalInfo (@RequestParam Integer id){
         Usuario user = usuarioService.findById(id);
         if (user == null) {
@@ -267,7 +286,7 @@ public class UsuarioController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/update/personal/info/jefe")
+    @PutMapping("/update/info/jefe")
     public ResponseEntity <?> updatePersonalInfo (@RequestBody UsuarioRequest userRequest, @RequestParam Integer id){
         Usuario user = usuarioService.findById(id);
         if (user == null) {
@@ -278,10 +297,10 @@ public class UsuarioController {
         user.setTelefono(userRequest.getTelefono());
         user.setIdentificacion(userRequest.getIdentificacion());
         usuarioService.save(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Usuario Actualizado", HttpStatus.OK);
     }
 
-    @GetMapping("/get/personal/info/abogado")
+    @GetMapping("/get/info/abogado")
     public ResponseEntity <?> getPersonalInfoAbogado (@RequestParam Integer id){
         Usuario user = usuarioService.findById(id);
         if (user == null) {
@@ -304,7 +323,7 @@ public class UsuarioController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PutMapping("/update/personal/info/abogado")
+    @PutMapping("/update/info/abogado")
     public ResponseEntity <?> updatePersonalInfoAbogado (@RequestBody UsuarioRequest userRequest, @RequestParam Integer id){
         Usuario user = usuarioService.findById(id);
         if (user == null) {
@@ -316,5 +335,17 @@ public class UsuarioController {
         user.setIdentificacion(userRequest.getIdentificacion());
         usuarioService.save(user);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Transactional
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAbogado(@RequestParam Integer id){
+        Usuario user = usuarioService.findById(id);
+        if (user == null) {
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+        }
+        user.setEliminado('S');
+        usuarioService.update(user);
+        return new ResponseEntity<>("Usuario Eliminado", HttpStatus.OK);
     }
 }

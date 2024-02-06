@@ -36,6 +36,9 @@ public class Usuario {
     @Column(nullable = false)
     private String correo;
 
+    @Column(nullable = false)
+    private Character eliminado;
+
     @Lob
     @Column(length = 1000)
     private byte[] img;

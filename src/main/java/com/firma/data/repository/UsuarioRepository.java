@@ -32,4 +32,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
             "JOIN TipoAbogado tp ON es.tipoAbogado.id = tp.id " +
             "WHERE(:especialidades IS NULL OR tp.nombre IN :especialidades) ")
     Page<Usuario> findAbogadosByFilter(List<String> especialidades, Pageable paging);
+
+    @Query("SELECT u FROM Usuario u " +
+            "JOIN Empleado e ON u.id = e.usuario.id " +
+            "JOIN Firma f ON f.id = e.firma.id " +
+            "WHERE f.id = :firmaId AND u.rol.nombre = 'ABOGADO' " +
+            "ORDER BY u.nombres ASC")
+    List<Usuario> findAllNamesAbogadosByFirma(Integer firmaId);
 }

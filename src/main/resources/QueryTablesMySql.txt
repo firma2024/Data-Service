@@ -94,6 +94,7 @@ CREATE TABLE Usuario (
   telefono        bigint(19) NOT NULL UNIQUE,
   identificacion  bigint(19) NOT NULL UNIQUE,
   nombres         varchar(255) NOT NULL,
+  eliminado           char(255) NOT NULL,
   correo          varchar(255) NOT NULL UNIQUE,
   img             blob,
   rolid           int(10) NOT NULL,

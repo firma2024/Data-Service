@@ -15,4 +15,5 @@ public interface IUsuarioService {
     Page<Usuario> findAllAbogadosByFirma(Integer firmaId, Integer rolId, Integer page, Integer size);
     Integer numberAssignedProcesses(Integer usuarioId);
     Page<Usuario> findAAbogadosByFilter(List<String> especialidades, Integer page, Integer size);
+    List<Usuario> findAllNamesAbogadosByFirma(Integer firmaId);
 }

@@ -164,7 +164,7 @@ public class ProcesoController {
             proceso.setEstadoproceso(estadoProceso);
         }
         procesoService.updateProceso(proceso);
-        return new ResponseEntity<>("Proceso actualizado", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Proceso actualizado", HttpStatus.OK);
     }
 
     @DeleteMapping("/delete")
@@ -177,7 +177,7 @@ public class ProcesoController {
         proceso.setEliminado('S');
         proceso.setEstadoproceso(estadoProceso);
         procesoService.updateProceso(proceso);
-        return new ResponseEntity<>("Proceso eliminado", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("Proceso eliminado", HttpStatus.OK);
     }
 
     @GetMapping("/get/all/firma/filter")
@@ -244,6 +244,7 @@ public class ProcesoController {
             ProcesoResponse response = ProcesoResponse.builder()
                     .id(proceso.getId())
                     .numeroRadicado(proceso.getRadicado())
+                    .despacho(proceso.getDespacho().getNombre())
                     .tipoProceso(proceso.getTipoproceso().getNombre())
                     .fechaRadicacion(proceso.getFecharadicado().format(formatter))
                     .build();

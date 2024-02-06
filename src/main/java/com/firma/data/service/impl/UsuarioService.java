@@ -61,4 +61,9 @@ public class UsuarioService implements IUsuarioService {
         Pageable paging = PageRequest.of(page, size, Sort.by("nombres").ascending());
         return usuarioRepository.findAbogadosByFilter(especialidades , paging);
     }
+
+    @Override
+    public List<Usuario> findAllNamesAbogadosByFirma(Integer firmaId) {
+        return usuarioRepository.findAllNamesAbogadosByFirma(firmaId);
+    }
 }
