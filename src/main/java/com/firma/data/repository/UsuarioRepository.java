@@ -39,4 +39,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
             "WHERE f.id = :firmaId AND u.rol.nombre = 'ABOGADO' " +
             "ORDER BY u.nombres ASC")
     List<Usuario> findAllNamesAbogadosByFirma(Integer firmaId);
+
+    Usuario findByUsername(String username);
 }

@@ -41,6 +41,6 @@ public interface ProcesoRepository extends JpaRepository<Proceso, Integer> {
     Set<Proceso> findAllByFirmaAndEstado(Integer firmaId, String estadoProceso);
 
     @Query("SELECT p FROM Proceso p " +
-            "WHERE p.empleado.usuario.id = :abogadoId AND p.estadoproceso.nombre = :name ")
-    Set<Proceso> findAllByAbogadoAndEstado(Integer abogadoId, String name);
+            "WHERE p.empleado.usuario.username = :userName AND p.estadoproceso.nombre = :name ")
+    Set<Proceso> findAllByAbogadoAndEstado(String userName, String name);
 }

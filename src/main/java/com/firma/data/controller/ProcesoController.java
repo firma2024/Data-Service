@@ -301,8 +301,8 @@ public class ProcesoController {
     }
 
     @GetMapping("/get/all/estado/abogado")
-    public ResponseEntity<?> getAllByEstadoAbogado(@RequestParam String name, @RequestParam Integer abogadoId) {
-        Set<Proceso> procesos = procesoService.findAllByAbogadoAndEstado(abogadoId, name);
+    public ResponseEntity<?> getAllByEstadoAbogado(@RequestParam String name, @RequestParam String userName) {
+        Set<Proceso> procesos = procesoService.findAllByAbogadoAndEstado(userName, name);
         List<ProcesoResponse> procesosResponses = new ArrayList<>();
         for (Proceso proceso : procesos) {
             ProcesoResponse p = ProcesoResponse.builder()
@@ -331,6 +331,7 @@ public class ProcesoController {
                 .numeroRadicado(proceso.getRadicado())
                 .tipoProceso(proceso.getTipoproceso().getNombre())
                 .demandado(proceso.getDemandado())
+                .despacho(proceso.getDespacho().getNombre())
                 .demandante(proceso.getDemandante())
                 .fechaRadicacion(proceso.getFecharadicado().format(formatter))
                 .estado(proceso.getEstadoproceso().getNombre())

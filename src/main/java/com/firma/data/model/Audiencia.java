@@ -20,6 +20,9 @@ public class Audiencia {
     @Column(nullable = false)
     private String enlace;
 
+    @Column(nullable = false)
+    private String nombre;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "procesoid", nullable = false)
     private Proceso proceso;

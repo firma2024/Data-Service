@@ -324,17 +324,25 @@ public class UsuarioController {
     }
 
     @PutMapping("/update/info/abogado")
-    public ResponseEntity <?> updatePersonalInfoAbogado (@RequestBody UsuarioRequest userRequest, @RequestParam Integer id){
-        Usuario user = usuarioService.findById(id);
+    public ResponseEntity <?> updatePersonalInfoAbogado (@RequestBody UsuarioRequest userRequest){
+        Usuario user = usuarioService.findById(userRequest.getId());
         if (user == null) {
             return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
         }
+
+        Set<TipoAbogado> especialidades = new HashSet<>();
+        for (String especialidad : userRequest.getEspecialidades()) {
+            TipoAbogado tipoAbogado = tipoAbogadoService.findByName(especialidad);
+            especialidades.add(tipoAbogado);
+        }
+
         user.setNombres(userRequest.getNombres());
         user.setCorreo(userRequest.getCorreo());
         user.setTelefono(userRequest.getTelefono());
         user.setIdentificacion(userRequest.getIdentificacion());
+        user.setEspecialidadesAbogado(especialidades);
         usuarioService.save(user);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>("Usuario Actualizado", HttpStatus.OK);
     }
 
     @Transactional
@@ -347,5 +355,18 @@ public class UsuarioController {
         user.setEliminado('S');
         usuarioService.update(user);
         return new ResponseEntity<>("Usuario Eliminado", HttpStatus.OK);
+    }
+
+    @GetMapping("/get/name")
+    public ResponseEntity<?> getUserName(@RequestParam String userName){
+        Usuario user = usuarioService.findByUserName(userName);
+        if (user == null) {
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+        }
+        UsuarioResponse res = UsuarioResponse.builder()
+                .id(user.getId())
+                .nombres(user.getNombres())
+                .build();
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

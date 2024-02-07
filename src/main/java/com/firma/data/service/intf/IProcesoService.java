@@ -16,6 +16,5 @@ public interface IProcesoService {
     Page<Proceso> findAllByAbogado(Integer abogadoId, String fechaInicioStr, String fechaFinStr, List<String> estadosProceso, String tipoProceso, Integer page, Integer size);
     Proceso findByRadicado(String radicado);
     Set<Proceso> findAllByFirmaAndEstado(Integer firmaId, String estadoProceso);
-
-    Set<Proceso> findAllByAbogadoAndEstado(Integer abogadoId, String name);
+    Set<Proceso> findAllByAbogadoAndEstado(String userName, String name);
 }

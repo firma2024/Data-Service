@@ -11,7 +11,7 @@ public interface IUsuarioService {
     Usuario update(Usuario usuario);
     Usuario findById(Integer id);
     List<Usuario> findAll();
-    Usuario findByName(String name);
+    Usuario findByUserName(String name);
     Page<Usuario> findAllAbogadosByFirma(Integer firmaId, Integer rolId, Integer page, Integer size);
     Integer numberAssignedProcesses(Integer usuarioId);
     Page<Usuario> findAAbogadosByFilter(List<String> especialidades, Integer page, Integer size);
