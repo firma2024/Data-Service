@@ -205,6 +205,7 @@ public class UsuarioController {
                 .rol(role)
                 .tipodocumento(tipoDocumento)
                 .especialidadesAbogado(tipoAbogados)
+                .eliminado('N')
                 .build();
 
         usuarioService.save(newUser);
@@ -234,6 +235,7 @@ public class UsuarioController {
                 .identificacion(userRequest.getIdentificacion())
                 .rol(role)
                 .tipodocumento(tipoDocumento)
+                .eliminado('N')
                 .build();
 
         usuarioService.save(newUser);
@@ -254,6 +256,7 @@ public class UsuarioController {
                 .identificacion(userRequest.getIdentificacion())
                 .rol(role)
                 .tipodocumento(tipoDocumento)
+                .eliminado('N')
                 .build();
 
         usuarioService.save(newUser);
