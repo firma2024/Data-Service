@@ -12,11 +12,6 @@ import java.util.List;
 
 @Repository
 public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
-    @Query("SELECT u FROM Usuario u " +
-            "JOIN Empleado e ON u.id = e.usuario.id " +
-            "JOIN Firma f ON f.id = e.firma.id " +
-            "WHERE f.id = :firmaId and u.rol.id = :rolId")
-    Page<Usuario> findAllAbogadosByFirma(Integer firmaId, Integer rolId, Pageable pageable);
 
     @Query(value = "SELECT COUNT(*) AS veces " +
             "FROM proceso p " +
@@ -28,10 +23,13 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
 
 
     @Query("SELECT u FROM Usuario u " +
+            "JOIN Empleado e ON u.id = e.usuario.id " +
+            "JOIN Firma f ON f.id = e.firma.id " +
             "JOIN EspecialidadAbogado es ON es.usuario.id = u.id " +
             "JOIN TipoAbogado tp ON es.tipoAbogado.id = tp.id " +
-            "WHERE(:especialidades IS NULL OR tp.nombre IN :especialidades) ")
-    Page<Usuario> findAbogadosByFilter(List<String> especialidades, Pageable paging);
+            "WHERE(:especialidades IS NULL OR tp.nombre IN :especialidades) " +
+            "AND f.id = :firmaId AND u.rol.id = :rolId ")
+    Page<Usuario> findAbogadosFirmaByFilter(List<String> especialidades, Pageable paging, Integer firmaId, Integer rolId);
 
     @Query("SELECT u FROM Usuario u " +
             "JOIN Empleado e ON u.id = e.usuario.id " +
