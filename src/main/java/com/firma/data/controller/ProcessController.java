@@ -46,7 +46,7 @@ public class ProcessController {
                                                       @RequestParam(required = false) List<String> estadosProceso,
                                                       @RequestParam(required = false) String tipoProceso,
                                                       @RequestParam(defaultValue = "0") Integer page,
-                                                      @RequestParam(defaultValue = "2") Integer size){
+                                                      @RequestParam(defaultValue = "10") Integer size){
         return processService.findProcessByFirmaFilter(firmaId, fechaInicioStr, fechaFinStr, estadosProceso, tipoProceso, page, size);
     }
 
@@ -57,7 +57,7 @@ public class ProcessController {
                                                 @RequestParam(required = false) List<String> estadosProceso,
                                                 @RequestParam(required = false) String tipoProceso,
                                                 @RequestParam(defaultValue = "0") Integer page,
-                                                @RequestParam(defaultValue = "2") Integer size){
+                                                @RequestParam(defaultValue = "10") Integer size){
         return processService.findProcessByAbogadoFilter(abogadoId, fechaInicioStr, fechaFinStr, estadosProceso, tipoProceso, page, size);
     }
 

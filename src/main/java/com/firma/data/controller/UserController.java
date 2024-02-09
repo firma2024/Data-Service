@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteAbogado(@RequestParam Integer id) {
+    public ResponseEntity<?> deleteUser(@RequestParam Integer id) {
         return userService.deleteUser(id);
     }
 
@@ -73,7 +73,7 @@ public class UserController {
                                                @RequestParam(defaultValue = "0") Integer numProcesosInicial,
                                                @RequestParam(defaultValue = "5") Integer numProcesosFinal,
                                                @RequestParam(defaultValue = "0") Integer page,
-                                               @RequestParam(defaultValue = "2") Integer size){
+                                               @RequestParam(defaultValue = "7") Integer size){
         return userService.findAllAbogadosByFirmaFilter(numProcesosInicial, numProcesosFinal, especialidades, firmaId, page, size);
     }
 

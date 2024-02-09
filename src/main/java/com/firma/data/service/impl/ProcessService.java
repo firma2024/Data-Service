@@ -48,7 +48,7 @@ public class ProcessService implements IProcessService {
     private IFirmaService firmaService;
     @Autowired
     private IActuacionService actuacionService;
-    DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+    private DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 

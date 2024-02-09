@@ -39,7 +39,7 @@ public class ActuacionController {
                                                                 @RequestParam(required = false) String fechaFinStr,
                                                                 @RequestParam(required = false) Boolean existeDoc,
                                                                 @RequestParam(defaultValue = "0") Integer page,
-                                                                @RequestParam(defaultValue = "2") Integer size){
+                                                                @RequestParam(defaultValue = "5") Integer size){
         return actuacionService.findActuacionesByProcessAbogadoFilter(procesoId, fechaInicioStr, fechaFinStr, existeDoc, page, size);
     }
 
@@ -49,7 +49,7 @@ public class ActuacionController {
                                                   @RequestParam(required = false) String fechaFinStr,
                                                   @RequestParam(required = false) String estadoActuacion,
                                                   @RequestParam(defaultValue = "0") Integer page,
-                                                  @RequestParam(defaultValue = "2") Integer size){
+                                                  @RequestParam(defaultValue = "5") Integer size){
         return actuacionService.findActuacionesByProcessJefeFilter(procesoId, fechaInicioStr, fechaFinStr, estadoActuacion, page, size);
     }
 
