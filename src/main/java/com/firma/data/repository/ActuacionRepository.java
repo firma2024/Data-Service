@@ -23,14 +23,14 @@ public interface ActuacionRepository extends JpaRepository<Actuacion, Integer> {
             "AND (:fechaInicio IS NULL OR a.fechaactuacion >= :fechaInicio) " +
             "AND (:fechaFin IS NULL OR a.fechaactuacion <= :fechaFin) " +
             "AND (:existeDoc IS NULL OR a.existedoc = :existeDoc) ")
-    Page<Actuacion> findAllByProceso(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, Boolean existeDoc, Pageable pageable);
+    Page<Actuacion> findByProcessAbogadoFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, Boolean existeDoc, Pageable pageable);
 
     @Query("SELECT a FROM Actuacion a " +
             "WHERE a.proceso.id = :procesoId " +
             "AND (:fechaInicio IS NULL OR a.fechaactuacion >= :fechaInicio) " +
             "AND (:fechaFin IS NULL OR a.fechaactuacion <= :fechaFin) " +
             "AND (:estadoActuacion IS NULL OR a.estadoactuacion.nombre = :estadoActuacion) " )
-    Page<Actuacion> findByFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, Pageable pageable);
+    Page<Actuacion> findByProcessJefeFiltros(Integer procesoId, LocalDate fechaInicio, LocalDate fechaFin, String estadoActuacion, Pageable pageable);
 
     @Query("SELECT a FROM Actuacion a " +
             "WHERE a.enviado = 'N' ")

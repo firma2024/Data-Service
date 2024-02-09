@@ -5,14 +5,16 @@ import com.firma.data.model.Usuario;
 import com.firma.data.payload.response.ActuacionDocumentResponse;
 import com.firma.data.service.intf.IActuacionService;
 import com.firma.data.service.intf.IStorageService;
-import com.firma.data.service.intf.IUsuarioService;
+import com.firma.data.service.intf.IUserService;
 import com.firma.data.utils.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import java.io.*;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,51 +24,60 @@ import java.util.Set;
 public class StorageService implements IStorageService {
 
     @Autowired
-    private IUsuarioService usuarioService;
+    private IUserService userService;
     @Autowired
     private IActuacionService actuacionService;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
-    public String uploadImage(MultipartFile file, Integer userId) throws IOException {
-        Usuario user = usuarioService.findById(userId);
+    public ResponseEntity<?> uploadPhotoUser(MultipartFile file, Integer userId) throws IOException {
+        Usuario user = userService.findById(userId);
         if (user == null) {
-            return "Usuario no encontrado";
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
         }
         user.setImg(ImageUtils.compressImage(file.getBytes()));
-        usuarioService.update(user);
-        return null;
+        userService.update(user);
+        return new ResponseEntity<>("Foto alamacenada", HttpStatus.OK);
     }
 
     @Override
-    public byte[] downloadImage(Integer userId) {
-        Usuario user = usuarioService.findById(userId);
-        if (user.getImg() != null){
-            return ImageUtils.decompressFile(user.getImg());
+    public ResponseEntity<?> downloadPhotoUser(Integer userId) {
+        Usuario user = userService.findById(userId);
+        if (user == null){
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
         }
-        return null;
+        if (user.getImg() == null){
+            return new ResponseEntity<>("Foto no encontrada", HttpStatus.NOT_FOUND);
+        }
+        byte[] image = ImageUtils.decompressFile(user.getImg());
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(image);
     }
 
     @Override
-    public String uploadDocument(MultipartFile file, Integer actuacionId) throws IOException {
+    public ResponseEntity<?> uploadDocument(MultipartFile file, Integer actuacionId) throws IOException {
         Actuacion actuacion = actuacionService.findById(actuacionId);
         if (actuacion == null) {
-            return "Actuacion no encontrada";
+            return new ResponseEntity<>("Actuacion no encontrada", HttpStatus.NOT_FOUND);
         }
         byte[] document = ImageUtils.compressImage(file.getBytes());
         actuacion.setDocumento(document);
         actuacionService.update(actuacion);
-        return null;
+        return new ResponseEntity<>("Documento almacenado", HttpStatus.OK);
     }
 
     @Override
-    public byte[] downloadDocument(Integer actuacionId) {
+    public ResponseEntity<?> downloadDocument(Integer actuacionId) {
         Actuacion actuacion = actuacionService.findById(actuacionId);
-        return ImageUtils.decompressFile(actuacion.getDocumento());
+        byte[] document = ImageUtils.decompressFile(actuacion.getDocumento());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(document);
     }
 
     @Override
-    public List<ActuacionDocumentResponse> downloadAllDocuments(Integer procesoId){
+    public ResponseEntity<?> downloadAllDocuments(Integer procesoId) {
         Set<Actuacion> actuaciones = actuacionService.findAllByProcesoAndDocument(procesoId);
         List<ActuacionDocumentResponse> documents = new ArrayList<>();
 
@@ -78,7 +89,6 @@ public class StorageService implements IStorageService {
                     .build();
             documents.add(acDoc);
         }
-
-        return documents;
+        return new ResponseEntity<>(documents, HttpStatus.OK);
     }
 }

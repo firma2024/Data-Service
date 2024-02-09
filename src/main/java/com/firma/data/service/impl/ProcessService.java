@@ -1,22 +1,26 @@
-package com.firma.data.controller;
+package com.firma.data.service.impl;
 
 import com.firma.data.model.*;
 import com.firma.data.payload.request.ActuacionRequest;
+import com.firma.data.payload.request.AudienciaRequest;
+import com.firma.data.payload.request.EnlaceRequest;
 import com.firma.data.payload.request.ProcesoRequest;
 import com.firma.data.payload.response.PageableResponse;
 import com.firma.data.payload.response.ProcesoAbogadoResponse;
 import com.firma.data.payload.response.ProcesoJefeResponse;
 import com.firma.data.payload.response.ProcesoResponse;
-import com.firma.data.service.intf.*;
+import com.firma.data.repository.*;
+import com.firma.data.service.intf.IActuacionService;
+import com.firma.data.service.intf.IFirmaService;
+import com.firma.data.service.intf.IProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,59 +29,54 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@RestController
-@EnableTransactionManagement
-@RequestMapping("/api/data/proceso")
-public class ProcesoController {
+@Service
+public class ProcessService implements IProcessService {
 
     @Autowired
-    private IProcesoService procesoService;
+    private EnlaceRepository enlaceRepository;
     @Autowired
-    private IActuacionService actuacionService;
+    private ProcesoRepository processRepository;
+    @Autowired
+    private EstadoProcesoRepository estadoProcesoRepository;
+    @Autowired
+    private AudienciaRepository audienciaRepository;
+    @Autowired
+    private TipoProcesoRepository tipoProcesoRepository;
+    @Autowired
+    private DespachoRepository despachoRepository;
     @Autowired
     private IFirmaService firmaService;
     @Autowired
-    private IEmpleadoService empleadoService;
-    @Autowired
-    private ITipoProcesoService tipoProcesoService;
-    @Autowired
-    private IDespachoService despachoService;
-    @Autowired
-    private IEstadoProcesoService estadoProcesoService;
-    @Autowired
-    private IEstadoActuacionService estadoActuacionService;
-    @Autowired
-    private IAudienciaService audienciaService;
+    private IActuacionService actuacionService;
+    private DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 
     @Transactional
-    @PostMapping("/save")
-    public ResponseEntity<?> saveProceso(@RequestBody ProcesoRequest procesoRequest) {
-        Firma firma = firmaService.findById(procesoRequest.getIdFirma());
+    @Override
+    public ResponseEntity<?> saveProcess(ProcesoRequest procesoRequest) {
+        Firma firma = firmaService.findFirmaById(procesoRequest.getIdFirma());
         if (firma == null) {
             return new ResponseEntity<>("Firma no encontrada", HttpStatus.NOT_FOUND);
         }
-        Empleado empleado = empleadoService.findEmpleadoByUsuario(procesoRequest.getIdAbogado());
+        Empleado empleado = firmaService.findEmpleadoByUsuario(procesoRequest.getIdAbogado());
         if (empleado == null) {
             return new ResponseEntity<>("Empleado no encontrado", HttpStatus.NOT_FOUND);
         }
-        TipoProceso tipoProceso = tipoProcesoService.findByName(procesoRequest.getTipoProceso());
+        TipoProceso tipoProceso = tipoProcesoRepository.findByNombre(procesoRequest.getTipoProceso());
 
         if (tipoProceso == null) {
-            tipoProceso = tipoProcesoService.saveTipoProceso(TipoProceso.builder().nombre(procesoRequest.getTipoProceso()).build());
+            tipoProceso = tipoProcesoRepository.save(TipoProceso.builder().nombre(procesoRequest.getTipoProceso()).build());
         }
-        Despacho despacho = despachoService.findDespachoByNombre(procesoRequest.getDespacho());
+        Despacho despacho = despachoRepository.findDespachoByNombre(procesoRequest.getDespacho());
 
         if (despacho == null) {
-            despacho = despachoService.saveDespacho(Despacho.builder().nombre(procesoRequest.getDespacho()).build());
+            despacho = despachoRepository.save(Despacho.builder().nombre(procesoRequest.getDespacho()).build());
         }
-
-        DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
         LocalDateTime dateRadicado = LocalDateTime.parse(procesoRequest.getFechaRadicacion(), formatterTime);
 
-        EstadoProceso estadoProceso = estadoProcesoService.findByName("Activo");
+        EstadoProceso estadoProceso = estadoProcesoRepository.findByNombre("Activo");
 
         Proceso newProceso = Proceso.builder()
                 .radicado(procesoRequest.getNumeroRadicado())
@@ -94,9 +93,9 @@ public class ProcesoController {
                 .firma(firma)
                 .build();
 
-        newProceso = procesoService.saveProceso(newProceso);
+        newProceso = processRepository.save(newProceso);
 
-        EstadoActuacion estadoActuacion = estadoActuacionService.findByName("Visto");
+        EstadoActuacion estadoActuacion = actuacionService.findEstadoActuacionByName("Visto");
         List<Actuacion> actuaciones = new ArrayList<>();
 
         for (ActuacionRequest actuacionReq : procesoRequest.getActuaciones()) {
@@ -129,9 +128,9 @@ public class ProcesoController {
         return new ResponseEntity<>("Proceso almacenado", HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("/get/jefe")
-    public ResponseEntity<?> getProceso(@RequestParam Integer procesoId) {
-        Proceso proceso = procesoService.findById(procesoId);
+    @Override
+    public ResponseEntity<?> findProcessJefe(Integer processId) {
+        Proceso proceso = processRepository.findById(processId).orElse(null);
         if (proceso == null) {
             return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
         }
@@ -148,46 +147,64 @@ public class ProcesoController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<?> findProcessAbogado(Integer processId) {
+        Proceso proceso = processRepository.findById(processId).orElse(null);
+        if (proceso == null) {
+            return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
+        }
+
+        Set<Audiencia> audiencias = audienciaRepository.findAllByProceso(processId);
+
+        ProcesoAbogadoResponse response = ProcesoAbogadoResponse.builder()
+                .id(proceso.getId())
+                .numeroRadicado(proceso.getRadicado())
+                .tipoProceso(proceso.getTipoproceso().getNombre())
+                .demandado(proceso.getDemandado())
+                .despacho(proceso.getDespacho().getNombre())
+                .demandante(proceso.getDemandante())
+                .fechaRadicacion(proceso.getFecharadicado().format(formatter))
+                .estado(proceso.getEstadoproceso().getNombre())
+                .audiencias(audiencias)
+                .build();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @Transactional
-    @PutMapping("/update")
-    public ResponseEntity<?> updateProceso(@RequestParam Integer procesoId, @RequestBody ProcesoRequest procesoRequest) {
-        Proceso proceso = procesoService.findById(procesoId);
+    @Override
+    public ResponseEntity<?> updateProcess(Integer id, ProcesoRequest procesoRequest) {
+        Proceso proceso = processRepository.findById(id).orElse(null);
         if (proceso == null) {
             return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
         }
         if (procesoRequest.getIdAbogado() != null) {
-            Empleado empleado = empleadoService.findEmpleadoByUsuario(procesoRequest.getIdAbogado());
+            Empleado empleado = firmaService.findEmpleadoByUsuario(procesoRequest.getIdAbogado());
             proceso.setEmpleado(empleado);
         }
         if (procesoRequest.getEstadoProceso() != null) {
-            EstadoProceso estadoProceso = estadoProcesoService.findByName(procesoRequest.getEstadoProceso());
+            EstadoProceso estadoProceso = estadoProcesoRepository.findByNombre(procesoRequest.getEstadoProceso());
             proceso.setEstadoproceso(estadoProceso);
         }
-        procesoService.updateProceso(proceso);
+        processRepository.save(proceso);
         return new ResponseEntity<>("Proceso actualizado", HttpStatus.OK);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> deleteProceso(@RequestParam Integer procesoId) {
-        Proceso proceso = procesoService.findById(procesoId);
+    @Override
+    public ResponseEntity<?> deleteProcess(Integer id) {
+        Proceso proceso = processRepository.findById(id).orElse(null);
         if (proceso == null) {
             return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
         }
-        EstadoProceso estadoProceso = estadoProcesoService.findByName("Retirado");
+        EstadoProceso estadoProceso = estadoProcesoRepository.findByNombre("Retirado");
         proceso.setEliminado('S');
         proceso.setEstadoproceso(estadoProceso);
-        procesoService.updateProceso(proceso);
+        processRepository.save(proceso);
         return new ResponseEntity<>("Proceso eliminado", HttpStatus.OK);
     }
 
-    @GetMapping("/get/all/firma/filter")
-    public ResponseEntity<?> getProcesosByFirmaFilter(@RequestParam(required = false) String fechaInicioStr,
-                                                      @RequestParam Integer firmaId,
-                                                      @RequestParam(required = false) String fechaFinStr,
-                                                      @RequestParam(required = false) List<String> estadosProceso,
-                                                      @RequestParam(required = false) String tipoProceso,
-                                                      @RequestParam(defaultValue = "0") Integer page,
-                                                      @RequestParam(defaultValue = "2") Integer size) {
+    @Override
+    public ResponseEntity<?> findProcessByFirmaFilter(Integer firmaId, String fechaInicioStr, String fechaFinStr, List<String> estadosProceso, String tipoProceso, Integer page, Integer size) {
         LocalDate fechaInicio = null;
         LocalDate fechaFin = null;
 
@@ -197,14 +214,15 @@ public class ProcesoController {
         if (fechaFinStr != null && !fechaFinStr.isEmpty()) {
             fechaFin = LocalDate.parse(fechaFinStr);
         }
-        Page<Proceso> pageProcesosFiltrados = procesoService.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso, page, size, firmaId);
+        Pageable paging = PageRequest.of(page, size);
+        Page<Proceso> pageProcesosFiltrados = processRepository.findByFiltros(fechaInicio, fechaFin, estadosProceso, tipoProceso, paging, firmaId);
 
         List<ProcesoJefeResponse> responses = new ArrayList<>();
 
         for (Proceso proceso : pageProcesosFiltrados.getContent()) {
             boolean estado = false;
             List<Actuacion> actuaciones = actuacionService.findByNoVisto(proceso.getFirma().getId());
-            if (actuaciones.size() > 0) {
+            if (!actuaciones.isEmpty()) {
                 estado = true;
             }
             ProcesoJefeResponse response = ProcesoJefeResponse.builder()
@@ -229,15 +247,11 @@ public class ProcesoController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/get/all/abogado/filter")
-    public ResponseEntity<?> getProcesosAbogado(@RequestParam Integer abogadoId,
-                                                @RequestParam(required = false) String fechaInicioStr,
-                                                @RequestParam(required = false) String fechaFinStr,
-                                                @RequestParam(required = false) List<String> estadosProceso,
-                                                @RequestParam(required = false) String tipoProceso,
-                                                @RequestParam(defaultValue = "0") Integer page,
-                                                @RequestParam(defaultValue = "2") Integer size) {
-        Page<Proceso> pageProcesosAbogado = procesoService.findAllByAbogado(abogadoId, fechaInicioStr, fechaFinStr, estadosProceso, tipoProceso, page, size);
+    @Override
+    public ResponseEntity<?> findProcessByAbogadoFilter(Integer abogadoId, String fechaInicioStr, String fechaFinStr, List<String> estadosProceso, String tipoProceso, Integer page, Integer size) {
+
+        Pageable paging = PageRequest.of(page, size);
+        Page<Proceso> pageProcesosAbogado = processRepository.findAllByAbogado(abogadoId, fechaInicioStr, fechaFinStr, estadosProceso, tipoProceso, paging);
         List<ProcesoResponse> responses = new ArrayList<>();
 
         for (Proceso proceso : pageProcesosAbogado.getContent()) {
@@ -261,10 +275,9 @@ public class ProcesoController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    //pendiente
-    @GetMapping("/get/all")
-    public ResponseEntity<?> getAllProcesos() {
-        Set<Proceso> procesos = procesoService.findAll();
+    @Override
+    public ResponseEntity<?> findAllProcesses() {
+        Set<Proceso> procesos = processRepository.findAllProcesos();
         List<ProcesoResponse> procesosResponses = new ArrayList<>();
         for (Proceso proceso : procesos) {
 
@@ -283,9 +296,9 @@ public class ProcesoController {
         return new ResponseEntity<>(procesosResponses, HttpStatus.OK);
     }
 
-    @GetMapping("/get/all/estado")
-    public ResponseEntity<?> getAllByEstado(@RequestParam String name, @RequestParam Integer firmaId) {
-        Set<Proceso> procesos = procesoService.findAllByFirmaAndEstado(firmaId, name);
+    @Override
+    public ResponseEntity<?> findAllByEstadoFirma(Integer firmaId, String name) {
+        Set<Proceso> procesos = processRepository.findAllByFirmaAndEstado(firmaId, name);
         List<ProcesoResponse> procesosResponses = new ArrayList<>();
         for (Proceso proceso : procesos) {
             ProcesoResponse p = ProcesoResponse.builder()
@@ -300,9 +313,9 @@ public class ProcesoController {
         return new ResponseEntity<>(procesosResponses, HttpStatus.OK);
     }
 
-    @GetMapping("/get/all/estado/abogado")
-    public ResponseEntity<?> getAllByEstadoAbogado(@RequestParam String name, @RequestParam String userName) {
-        Set<Proceso> procesos = procesoService.findAllByAbogadoAndEstado(userName, name);
+    @Override
+    public ResponseEntity<?> findAllByEstadoAbogado(String userName, String name) {
+        Set<Proceso> procesos = processRepository.findAllByAbogadoAndEstado(userName, name);
         List<ProcesoResponse> procesosResponses = new ArrayList<>();
         for (Proceso proceso : procesos) {
             ProcesoResponse p = ProcesoResponse.builder()
@@ -317,29 +330,84 @@ public class ProcesoController {
         return new ResponseEntity<>(procesosResponses, HttpStatus.OK);
     }
 
-    @GetMapping("/get/abogado")
-    public ResponseEntity<?> getProcesoAbogado(@RequestParam Integer procesoId) {
-        Proceso proceso = procesoService.findById(procesoId);
-        if (proceso == null) {
-            return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
-        }
-
-        Set<Audiencia> audiencias = audienciaService.findAllByProceso(procesoId);
-
-        ProcesoAbogadoResponse response = ProcesoAbogadoResponse.builder()
-                .id(proceso.getId())
-                .numeroRadicado(proceso.getRadicado())
-                .tipoProceso(proceso.getTipoproceso().getNombre())
-                .demandado(proceso.getDemandado())
-                .despacho(proceso.getDespacho().getNombre())
-                .demandante(proceso.getDemandante())
-                .fechaRadicacion(proceso.getFecharadicado().format(formatter))
-                .estado(proceso.getEstadoproceso().getNombre())
-                .audiencias(audiencias)
+    @Override
+    public ResponseEntity<?> saveAudiencia(AudienciaRequest audiencia) {
+        Proceso proceso = processRepository.findById(audiencia.getProcesoid()).orElse(null);
+        Audiencia newAudiencia = Audiencia.builder()
+                .enlace(audiencia.getEnlace())
+                .nombre(audiencia.getNombre())
+                .proceso(proceso)
                 .build();
 
-        return new ResponseEntity<>(response, HttpStatus.OK);
-
+        audienciaRepository.save(newAudiencia);
+        return new ResponseEntity<>("Audiencia Creada", HttpStatus.CREATED);
     }
+
+    @Override
+    public ResponseEntity<?> updateAudiencia(Integer id, String enlace) {
+        Audiencia audiencia = audienciaRepository.findById(id).orElse(null);
+        audiencia.setEnlace(enlace);
+        audienciaRepository.save(audiencia);
+        return new ResponseEntity<>("Audiencia Actualizada", HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findAllEstadoProceso() {
+        return new ResponseEntity<>(estadoProcesoRepository.findAll(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findEstadoProcesoByName(String name) {
+        EstadoProceso estadoProceso = estadoProcesoRepository.findByNombre(name);
+        if (estadoProceso == null) {
+            return new ResponseEntity<>("Estado proceso no encontrado", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(estadoProceso, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findAllTipoProceso() {
+        return new ResponseEntity<>(tipoProcesoRepository.findAll(), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findTipoProcesoByName(String name) {
+        TipoProceso tipoProceso = tipoProcesoRepository.findByNombre(name);
+        if (tipoProceso == null) {
+            return new ResponseEntity<>("Tipo de proceso no encontrado", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(tipoProceso, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findAllDespachoWithOutLink(String year) {
+        return new ResponseEntity<>(despachoRepository.findAllDespachosWithOutLinkByYear(year), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findDespachoByProcess(Integer processId) {
+        Despacho despacho = despachoRepository.findDespachoByProceso(processId);
+        if (despacho == null) {
+            return new ResponseEntity<>("Despacho no encontrado", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(despacho, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> saveEnlace(EnlaceRequest enlaceRequest) {
+        Despacho despacho = despachoRepository.findById(enlaceRequest.getDespachoid()).orElse(null);
+        if (despacho == null) {
+            return ResponseEntity.badRequest().body("Despacho no encontrado");
+        }
+        Enlace en = Enlace.builder()
+                .url(enlaceRequest.getUrl())
+                .fechaconsulta(enlaceRequest.getFechaconsulta())
+                .despacho(despacho)
+                .build();
+
+        enlaceRepository.save(en);
+        return new ResponseEntity<>("Enlace was saved", HttpStatus.OK);
+    }
+
 
 }

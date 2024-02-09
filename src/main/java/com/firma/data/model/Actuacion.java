@@ -40,7 +40,7 @@ public class Actuacion {
     @Column(nullable = false)
     private Boolean existedoc;
     @Lob
-    @Column(nullable = true, length = 1000000)
+    @Column(nullable = true, length = 10000000)
     private byte[] documento;
 
     @Column(nullable = false)
