@@ -33,7 +33,7 @@ public interface ProcesoRepository extends JpaRepository<Proceso, Integer> {
     Proceso findByRadicado(String radicado);
 
     @Query("SELECT p FROM Proceso p " +
-            "WHERE p.estadoproceso.nombre != 'Retirado' ")
+            "WHERE p.estadoproceso.nombre = 'Activo' " )
     Set<Proceso> findAllProcesos();
 
     @Query("SELECT p FROM Proceso p " +

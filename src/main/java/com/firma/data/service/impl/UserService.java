@@ -172,6 +172,17 @@ public class UserService implements IUserService {
         if (user == null) {
             return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
         }
+
+        if (user.getRol().getNombre().equals("ABOGADO")){
+            Integer number = usuarioRepository.getNumberAssignedProcesses(user.getId());
+            if (number == null) {
+                number = 0;
+            }
+            if (number != 0) {
+                return new ResponseEntity<>("El abogado tiene procesos asignados", HttpStatus.BAD_REQUEST);
+            }
+        }
+
         user.setEliminado('S');
         usuarioRepository.save(user);
         return new ResponseEntity<>("Usuario Eliminado", HttpStatus.OK);
