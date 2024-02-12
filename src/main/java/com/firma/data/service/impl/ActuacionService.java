@@ -166,7 +166,8 @@ public class ActuacionService implements IActuacionService {
 
     @Override
     public ResponseEntity<?> saveRegistroCorreo(RegistroCorreo registroCorreo) {
-        return new ResponseEntity<>(registroCorreoRepository.save(registroCorreo), HttpStatus.OK);
+        registroCorreoRepository.save(registroCorreo);
+        return new ResponseEntity<>("Registro correo almacenado", HttpStatus.OK);
     }
 
 }
