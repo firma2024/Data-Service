@@ -10,7 +10,7 @@ import java.util.List;
 public interface IFirmaService {
     ResponseEntity<?> saveFirma(FirmaRequest firma);
     ResponseEntity<?> findFirmaByUser(String userName);
-    Firma findFirmaById(Integer id);
+    ResponseEntity<?> findFirmaById(Integer id);
     Empleado saveEmpleado(Empleado empleado);
-    Empleado findEmpleadoByUsuario(Integer idAbogado);
+    ResponseEntity<?> findEmpleadoByUsuario(Integer idAbogado);
 }

@@ -3,7 +3,6 @@ package com.firma.data.service.impl;
 import com.firma.data.model.*;
 import com.firma.data.payload.request.UsuarioRequest;
 import com.firma.data.payload.response.PageableResponse;
-import com.firma.data.payload.response.UsuarioResponse;
 import com.firma.data.repository.RolRepository;
 import com.firma.data.repository.TipoAbogadoRepository;
 import com.firma.data.repository.TipoDocumentoRepository;
@@ -21,10 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
+
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class UserService implements IUserService {
@@ -42,126 +39,20 @@ public class UserService implements IUserService {
 
     @Transactional
     @Override
-    public ResponseEntity<?> saveAbogado(UsuarioRequest userRequest) {
-        TipoDocumento typeDocument = tipoDocumentoRepository.findByNombre(userRequest.getTipoDocumento());
-        Rol role = rolRepository.findByNombre("ABOGADO");
+    public ResponseEntity<?> saveUser(UsuarioRequest userRequest) {
 
-        Set<TipoAbogado> specialties = new HashSet<>();
+        Usuario user = usuarioRepository.save(userRequest.getUser());
 
-        for (String specialty : userRequest.getEspecialidades()) {
-            TipoAbogado typeLawyer = tipoAbogadoRepository.findByNombre(specialty);
-            specialties.add(typeLawyer);
+        if (userRequest.getEmployee() != null){
+            userRequest.getEmployee().setUsuario(user);
+            firmaService.saveEmpleado(userRequest.getEmployee());
         }
 
-        Usuario newUser = Usuario.builder()
-                .nombres(userRequest.getNombres())
-                .correo(userRequest.getCorreo())
-                .username(userRequest.getUsername())
-                .telefono(userRequest.getTelefono())
-                .identificacion(userRequest.getIdentificacion())
-                .rol(role)
-                .tipodocumento(typeDocument)
-                .especialidadesAbogado(specialties)
-                .eliminado('N')
-                .build();
-
-        usuarioRepository.save(newUser);
-
-        Firma firma = firmaService.findFirmaById(userRequest.getFirmaId());
-        Empleado newEmployee = Empleado.builder()
-                .usuario(newUser)
-                .firma(firma)
-                .build();
-
-        firmaService.saveEmpleado(newEmployee);
-
-        return new ResponseEntity<>("Abogado fue creado", HttpStatus.OK);
-    }
-
-    @Transactional
-    @Override
-    public ResponseEntity<?> saveJefe(UsuarioRequest userRequest) {
-        TipoDocumento tipoDocumento = tipoDocumentoRepository.findByNombre(userRequest.getTipoDocumento());
-        Rol role = rolRepository.findByNombre("JEFE");
-
-        Usuario newUser = Usuario.builder()
-                .nombres(userRequest.getNombres())
-                .correo(userRequest.getCorreo())
-                .username(userRequest.getUsername())
-                .telefono(userRequest.getTelefono())
-                .identificacion(userRequest.getIdentificacion())
-                .rol(role)
-                .tipodocumento(tipoDocumento)
-                .eliminado('N')
-                .build();
-
-        usuarioRepository.save(newUser);
-
-        Firma firma = firmaService.findFirmaById(userRequest.getFirmaId());
-        Empleado empleado = Empleado.builder()
-                .usuario(newUser)
-                .firma(firma)
-                .build();
-
-        firmaService.saveEmpleado(empleado);
-
-        return new ResponseEntity<>("Jefe fue creado", HttpStatus.OK);
-    }
-
-    @Transactional
-    @Override
-    public ResponseEntity<?> saveAdmin(UsuarioRequest userRequest) {
-        TipoDocumento tipoDocumento = tipoDocumentoRepository.findByNombre(userRequest.getTipoDocumento());
-        Rol role = rolRepository.findByNombre("ADMIN");
-
-        Usuario newUser = Usuario.builder()
-                .nombres(userRequest.getNombres())
-                .correo(userRequest.getCorreo())
-                .username(userRequest.getUsername())
-                .telefono(userRequest.getTelefono())
-                .identificacion(userRequest.getIdentificacion())
-                .rol(role)
-                .tipodocumento(tipoDocumento)
-                .eliminado('N')
-                .build();
-
-        usuarioRepository.save(newUser);
-        return new ResponseEntity<>("Admin fue creado", HttpStatus.OK);
+        return new ResponseEntity<>("Usuario " + userRequest.getUser().getRol().getNombre() + " Creado", HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> updateAbogado(UsuarioRequest userRequest) {
-        Usuario user = usuarioRepository.findById(userRequest.getId()).orElse(null);
-        if (user == null) {
-            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
-        }
-        user.setNombres(userRequest.getNombres());
-        user.setCorreo(userRequest.getCorreo());
-        user.setTelefono(userRequest.getTelefono());
-        user.setIdentificacion(userRequest.getIdentificacion());
-        usuarioRepository.save(user);
-        return new ResponseEntity<>("Usuario Actualizado", HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<?> updateJefe(UsuarioRequest userRequest) {
-        Usuario user = usuarioRepository.findById(userRequest.getId()).orElse(null);
-        if (user == null) {
-            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
-        }
-
-        Set<TipoAbogado> specialties = new HashSet<>();
-
-        for (String specialty : userRequest.getEspecialidades()) {
-            TipoAbogado typeLawyer = tipoAbogadoRepository.findByNombre(specialty);
-            specialties.add(typeLawyer);
-        }
-
-        user.setNombres(userRequest.getNombres());
-        user.setCorreo(userRequest.getCorreo());
-        user.setTelefono(userRequest.getTelefono());
-        user.setIdentificacion(userRequest.getIdentificacion());
-        user.setEspecialidadesAbogado(specialties);
+    public ResponseEntity<?> updateUser(Usuario user) {
         usuarioRepository.save(user);
         return new ResponseEntity<>("Usuario Actualizado", HttpStatus.OK);
     }
@@ -169,63 +60,10 @@ public class UserService implements IUserService {
     @Override
     public ResponseEntity<?> deleteUser(Integer id) {
         Usuario user = usuarioRepository.findById(id).orElse(null);
-        if (user == null) {
-            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
-        }
-
-        if (user.getRol().getNombre().equals("ABOGADO")){
-            Integer number = usuarioRepository.getNumberAssignedProcesses(user.getId());
-            if (number == null) {
-                number = 0;
-            }
-            if (number != 0) {
-                return new ResponseEntity<>("El abogado tiene procesos asignados", HttpStatus.BAD_REQUEST);
-            }
-        }
-
+        assert user != null;
         user.setEliminado('S');
         usuarioRepository.save(user);
         return new ResponseEntity<>("Usuario Eliminado", HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<?> getInfoAbogado(Integer id) {
-        Usuario user = usuarioRepository.findById(id).orElse(null);
-        if (user == null) {
-            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
-        }
-        List<String> especialidades = new ArrayList<>();
-
-        for(TipoAbogado tipoAbogado : user.getEspecialidadesAbogado()){
-            especialidades.add(tipoAbogado.getNombre());
-        }
-        UsuarioResponse response = UsuarioResponse.builder()
-                .id(user.getId())
-                .nombres(user.getNombres())
-                .correo(user.getCorreo())
-                .telefono(user.getTelefono())
-                .identificacion(user.getIdentificacion())
-                .especialidades(especialidades)
-                .build();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<?> getInfoJefe(Integer id) {
-        Usuario user = usuarioRepository.findById(id).orElse(null);
-        if (user == null) {
-            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
-        }
-        UsuarioResponse response = UsuarioResponse.builder()
-                .id(user.getId())
-                .nombres(user.getNombres())
-                .correo(user.getCorreo())
-                .telefono(user.getTelefono())
-                .identificacion(user.getIdentificacion())
-                .build();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Override
@@ -234,49 +72,16 @@ public class UserService implements IUserService {
         if (users == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        List<UsuarioResponse> userResponse = new ArrayList<>();
-
-        for (Usuario user : users) {
-            userResponse.add(UsuarioResponse.builder()
-                    .id(user.getId())
-                    .nombres(user.getNombres())
-                    .build());
-        }
-
-        return new ResponseEntity<>(userResponse, HttpStatus.OK);
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
     @Override
-    public ResponseEntity<?> findAllAbogadosByFirmaFilter(Integer numProcesosInicial, Integer numProcesosFinal, List<String> especialidades, Integer firmaId, Integer page, Integer size) {
-        Rol role = rolRepository.findByNombre("ABOGADO");
+    public ResponseEntity<?> findAllAbogadosByFirmaFilter(Integer numProcesosInicial, Integer numProcesosFinal, List<String> especialidades, Integer firmaId, Integer rolId, Integer page, Integer size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("nombres").ascending());
-        Page<Usuario> pageUsers = usuarioRepository.findAbogadosFirmaByFilter(especialidades, paging, firmaId, role.getId());
-        List<UsuarioResponse> userResponse = new ArrayList<>();
+        Page<Usuario> pageUsers = usuarioRepository.findAbogadosFirmaByFilter(especialidades, paging, firmaId, rolId);
 
-        for (Usuario user : pageUsers.getContent()) {
-            Integer number = usuarioRepository.getNumberAssignedProcesses(user.getId());
-            if (number == null) {
-                number = 0;
-            }
-            List<String> especialidadesAbogado = new ArrayList<>();
-
-            for(TipoAbogado tipoAbogado : user.getEspecialidadesAbogado()){
-                especialidadesAbogado.add(tipoAbogado.getNombre());
-            }
-            if (number >= numProcesosInicial && number <= numProcesosFinal) {
-                userResponse.add(UsuarioResponse.builder()
-                        .id(user.getId())
-                        .nombres(user.getNombres())
-                        .correo(user.getCorreo())
-                        .telefono(user.getTelefono())
-                        .especialidades(especialidadesAbogado)
-                        .numeroProcesosAsignados(number)
-                        .build());
-            }
-        }
-
-        PageableResponse<UsuarioResponse> response = PageableResponse.<UsuarioResponse>builder()
-                .data(userResponse)
+        PageableResponse<Usuario> response = PageableResponse.<Usuario>builder()
+                .data(pageUsers.getContent())
                 .currentPage(pageUsers.getNumber() + 1)
                 .totalItems(pageUsers.getTotalElements())
                 .totalPages(pageUsers.getTotalPages())
@@ -291,11 +96,7 @@ public class UserService implements IUserService {
         if (user == null) {
             return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
         }
-        UsuarioResponse res = UsuarioResponse.builder()
-                .id(user.getId())
-                .nombres(user.getNombres())
-                .build();
-        return new ResponseEntity<>(res, HttpStatus.OK);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @Override
@@ -368,7 +169,43 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void update(Usuario user) {
-        usuarioRepository.save(user);
+    public ResponseEntity<?> getUserById(Integer id) {
+        Usuario user = usuarioRepository.findById(id).orElse(null);
+        if (user == null) {
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> getAssingedProcesses(Integer id) {
+        return new ResponseEntity<>(usuarioRepository.getNumberAssignedProcesses(id), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findRolByName(String name) {
+        Rol rol = rolRepository.findByNombre(name);
+        if (rol == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(rol, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findTipoAbogadoByName(String name) {
+        TipoAbogado tipoAbogado = tipoAbogadoRepository.findByNombre(name);
+        if (tipoAbogado == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(tipoAbogado, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> findTipoDocumentoByName(String name) {
+        TipoDocumento tipoDocumento = tipoDocumentoRepository.findByNombre(name);
+        if (tipoDocumento == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(tipoDocumento, HttpStatus.OK);
     }
 }

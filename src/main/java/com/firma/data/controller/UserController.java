@@ -1,5 +1,6 @@
 package com.firma.data.controller;
 
+import com.firma.data.model.Usuario;
 import com.firma.data.payload.request.UsuarioRequest;
 import com.firma.data.service.intf.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,39 +18,24 @@ public class UserController {
     @Autowired
     private IUserService userService;
 
-    @PostMapping("/add/abogado")
-    public ResponseEntity<?> addAbogado(@RequestBody UsuarioRequest userRequest) {
-        return userService.saveAbogado(userRequest);
+    @PostMapping("/save")
+    public ResponseEntity<?> saveUser(@RequestBody UsuarioRequest userRequest) {
+        return userService.saveUser(userRequest);
     }
 
-    @PostMapping("/add/jefe")
-    public ResponseEntity<?> addJefe(@RequestBody UsuarioRequest userRequest) {
-        return userService.saveJefe(userRequest);
+    @GetMapping("/get")
+    public ResponseEntity<?> getUser(@RequestParam Integer id) {
+        return userService.getUserById(id);
     }
 
-    @PostMapping("/add/admin")
-    public ResponseEntity<?> addAdmin(@RequestBody UsuarioRequest userRequest) {
-        return userService.saveAdmin(userRequest);
+    @PutMapping("/update")
+    public ResponseEntity <?> updateUser (@RequestBody Usuario user){
+        return userService.updateUser(user);
     }
 
-    @GetMapping("/get/info/jefe")
-    public ResponseEntity <?> getPersonalInfo (@RequestParam Integer id){
-        return userService.getInfoJefe(id);
-    }
-
-    @GetMapping("/get/info/abogado")
-    public ResponseEntity <?> getPersonalInfoAbogado (@RequestParam Integer id){
-        return userService.getInfoAbogado(id);
-    }
-
-    @PutMapping("/update/info/abogado")
-    public ResponseEntity <?> updatePersonalInfoAbogado (@RequestBody UsuarioRequest userRequest){
-        return userService.updateAbogado(userRequest);
-    }
-
-    @PutMapping("/update/info/jefe")
-    public ResponseEntity <?> updatePersonalInfoJefe (@RequestBody UsuarioRequest userRequest){
-        return userService.updateJefe(userRequest);
+    @GetMapping("/get/assigned/processes")
+    public ResponseEntity<?> getAssignedProcesses(@RequestParam Integer id) {
+        return userService.getAssingedProcesses(id);
     }
 
     @DeleteMapping("/delete")
@@ -68,19 +54,15 @@ public class UserController {
     }
 
     @GetMapping("/jefe/abogados/filter")
-    public ResponseEntity<?> getAbogadosFilter(@RequestParam(required = false) List<String> especialidades,
-                                               @RequestParam Integer firmaId,
+    public ResponseEntity<?> getAbogadosByFirmaFilter(@RequestParam(required = false) List<String> especialidades,
+                                               @RequestParam Integer firmaId, @RequestParam Integer roleId,
                                                @RequestParam(defaultValue = "0") Integer numProcesosInicial,
                                                @RequestParam(defaultValue = "5") Integer numProcesosFinal,
                                                @RequestParam(defaultValue = "0") Integer page,
                                                @RequestParam(defaultValue = "7") Integer size){
-        return userService.findAllAbogadosByFirmaFilter(numProcesosInicial, numProcesosFinal, especialidades, firmaId, page, size);
+        return userService.findAllAbogadosByFirmaFilter(numProcesosInicial, numProcesosFinal, especialidades, firmaId, roleId, page, size);
     }
 
-    @GetMapping("/get/abogado")
-    public ResponseEntity<?> getAbogado(@RequestParam Integer usuarioId){
-        return userService.getInfoAbogado(usuarioId);
-    }
 
     @GetMapping("/rol/get/user")
     public ResponseEntity<?> getRoleByUser(@RequestParam String username){
@@ -89,7 +71,7 @@ public class UserController {
 
     @GetMapping("/rol/get")
     public ResponseEntity<?> getRole(@RequestParam String roleName){
-        return userService.findRoleByUser(roleName);
+        return userService.findRolByName(roleName);
     }
 
     @GetMapping("/tipoAbogado/get/all")
@@ -99,7 +81,7 @@ public class UserController {
 
     @GetMapping("/tipoAbogado/get")
     public ResponseEntity<?> getTipoAbogado(@RequestParam String name){
-        return userService.tipoAbogadoFindByName(name);
+        return userService.findTipoAbogadoByName(name);
     }
 
     @GetMapping("/tipoDocumento/get/all")
@@ -109,6 +91,6 @@ public class UserController {
 
     @GetMapping("/tipoDocumento/get")
     public ResponseEntity<?> getTipoDocumento(@RequestParam String name){
-        return userService.findByNameTipoDocumento(name);
+        return userService.findTipoDocumentoByName(name);
     }
 }

@@ -39,8 +39,12 @@ public class FirmaService implements IFirmaService {
     }
 
     @Override
-    public Firma findFirmaById(Integer id) {
-        return firmaRepository.findById(id).orElse(null);
+    public ResponseEntity<?> findFirmaById(Integer id) {
+        Firma firma = firmaRepository.findById(id).orElse(null);
+        if (firma == null) {
+            return new ResponseEntity<>("Firma no encontrada", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(firma, HttpStatus.OK);
     }
 
     @Override
@@ -49,8 +53,12 @@ public class FirmaService implements IFirmaService {
     }
 
     @Override
-    public Empleado findEmpleadoByUsuario(Integer idAbogado) {
-        return empleadoRepository.findEmpleadoByUsuario(idAbogado);
+    public ResponseEntity<?> findEmpleadoByUsuario(Integer idAbogado) {
+        Empleado empleado = empleadoRepository.findEmpleadoByUsuario(idAbogado);
+        if (empleado == null) {
+            return new ResponseEntity<>("Empleado no encontrado", HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(empleado, HttpStatus.OK);
     }
 
 }

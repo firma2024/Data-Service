@@ -1,9 +1,10 @@
 package com.firma.data.payload.request;
 
+import com.firma.data.model.Empleado;
+import com.firma.data.model.Firma;
+import com.firma.data.model.Usuario;
 import lombok.*;
 
-import java.math.BigInteger;
-import java.util.Set;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -11,13 +12,6 @@ import java.util.Set;
 @Setter
 @Builder
 public class UsuarioRequest {
-    private Integer id;
-    private String nombres;
-    private String correo;
-    private BigInteger telefono;
-    private BigInteger identificacion;
-    private String username;
-    private String tipoDocumento;
-    private Set<String> especialidades;
-    private Integer firmaId;
+    private Usuario user;
+    private Empleado employee;
 }

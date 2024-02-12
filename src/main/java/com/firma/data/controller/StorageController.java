@@ -17,9 +17,9 @@ public class StorageController {
     private IStorageService storageService;
 
     @PostMapping("/upload/photo")
-    public ResponseEntity<?> addAbogado(@RequestParam("image") MultipartFile file, @RequestParam Integer usuarioId){
+    public ResponseEntity<?> addAbogado(MultipartFile file, Integer userId){
         try {
-            return storageService.uploadPhotoUser(file, usuarioId);
+            return storageService.uploadPhotoUser(file, userId);
         } catch (IOException e) {
             return ResponseEntity.badRequest().body("Error al subir la foto");
         }

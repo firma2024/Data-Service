@@ -24,4 +24,14 @@ public class FirmaController {
     public ResponseEntity<?> saveFirma(@RequestBody FirmaRequest firma) {
         return firmaService.saveFirma(firma);
     }
+
+    @GetMapping("/get")
+    public ResponseEntity<?> getFirma(@RequestParam Integer id) {
+        return firmaService.findFirmaById(id);
+    }
+
+    @GetMapping("/empleado/get")
+    public ResponseEntity<?> getEmpleado(@RequestParam Integer idAbogado) {
+        return firmaService.findEmpleadoByUsuario(idAbogado);
+    }
 }

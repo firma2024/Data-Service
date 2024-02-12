@@ -1,8 +1,9 @@
 package com.firma.data.controller;
 
-import com.firma.data.payload.request.AudienciaRequest;
-import com.firma.data.payload.request.EnlaceRequest;
-import com.firma.data.payload.request.ProcesoRequest;
+import com.firma.data.model.Audiencia;
+import com.firma.data.model.Enlace;
+import com.firma.data.model.Proceso;
+import com.firma.data.payload.request.ProcessRequest;
 import com.firma.data.service.intf.IProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +21,18 @@ public class ProcessController {
     private IProcessService processService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveProcess(@RequestBody ProcesoRequest procesoRequest) {
+    public ResponseEntity<?> saveProcess(@RequestBody ProcessRequest procesoRequest) {
         return processService.saveProcess(procesoRequest);
     }
 
-    @GetMapping("/get/jefe")
-    public ResponseEntity<?> getProcessJefe(@RequestParam Integer procesoId){
-        return processService.findProcessJefe(procesoId);
+    @GetMapping("/get")
+    public ResponseEntity<?> getProcess(@RequestParam Integer procesoId){
+        return processService.findProcessById(procesoId);
     }
 
     @PutMapping("/update")
-    public ResponseEntity<?> updateProcess(@RequestParam Integer processId, @RequestBody ProcesoRequest procesoRequest){
-        return processService.updateProcess(processId, procesoRequest);
+    public ResponseEntity<?> updateProcess(@RequestBody Proceso process){
+        return processService.updateProcess(process);
     }
 
     @DeleteMapping("/delete")
@@ -66,6 +67,11 @@ public class ProcessController {
         return processService.findAllProcesses();
     }
 
+    @GetMapping("/get/radicado")
+    public ResponseEntity<?> getProcessByRadicado(@RequestParam String radicado){
+        return processService.findProcessByRadicado(radicado);
+    }
+
     @GetMapping("/get/all/estado")
     public ResponseEntity<?> getAllByEstado(@RequestParam String name, @RequestParam Integer firmaId){
         return processService.findAllByEstadoFirma(firmaId, name);
@@ -74,11 +80,6 @@ public class ProcessController {
     @GetMapping("/get/all/estado/abogado")
     public ResponseEntity<?> getAllByEstadoAbogado(@RequestParam String name, @RequestParam String userName){
         return processService.findAllByEstadoAbogado(userName, name);
-    }
-
-    @GetMapping("/get/abogado")
-    public ResponseEntity<?> getProcessAbogado(@RequestParam Integer procesoId){
-        return processService.findProcessAbogado(procesoId);
     }
 
     @GetMapping("/estadoProceso/get/all")
@@ -90,6 +91,10 @@ public class ProcessController {
     public ResponseEntity<?> getEstadoProcesoByName(@RequestParam String name){
         return processService.findEstadoProcesoByName(name);
     }
+    @GetMapping("/audiencia/get/all")
+    public ResponseEntity<?> getAllAudienciasByProceso(@RequestParam Integer procesoId){
+        return processService.findAllAudienciasByProceso(procesoId);
+    }
 
     @PutMapping("/audiencia/update")
     public ResponseEntity<?> updateAudiencia(@RequestParam Integer id, @RequestParam String enlace){
@@ -97,7 +102,7 @@ public class ProcessController {
     }
 
     @PostMapping("/audiencia/save")
-    public ResponseEntity<?> saveAudiencia(@RequestBody AudienciaRequest audiencia){
+    public ResponseEntity<?> saveAudiencia(@RequestBody Audiencia audiencia){
         return processService.saveAudiencia(audiencia);
     }
 
@@ -107,8 +112,13 @@ public class ProcessController {
     }
 
     @GetMapping("/despacho/get")
-    public ResponseEntity<?> getDespachoByProceso(@RequestParam Integer procesoId){
-        return processService.findDespachoByProcess(procesoId);
+    public ResponseEntity<?> getDespachoByProceso(@RequestParam String name){
+        return processService.findDespachoByName(name);
+    }
+
+    @GetMapping("/despacho/get/id")
+    public ResponseEntity<?> getDespachoById(@RequestParam Integer despachoid){
+        return processService.findDespachoById(despachoid);
     }
 
     @GetMapping("/tipoProceso/get/all")
@@ -122,7 +132,12 @@ public class ProcessController {
     }
 
     @PostMapping("/enlace/save")
-    public ResponseEntity<?> saveEnlace(@RequestBody EnlaceRequest enlaceRequest){
+    public ResponseEntity<?> saveEnlace(@RequestBody Enlace enlaceRequest){
         return processService.saveEnlace(enlaceRequest);
+    }
+
+    @GetMapping("/enlace/get")
+    public ResponseEntity<?> getEnlaceByDespachoAndYear(@RequestParam Integer id, @RequestParam String year){
+        return processService.findEnlaceByDespachoAndYear(id, year);
     }
 }

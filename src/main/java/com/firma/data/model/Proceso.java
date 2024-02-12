@@ -1,5 +1,6 @@
 package com.firma.data.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,12 +28,10 @@ public class Proceso {
     private BigInteger numeroproceso;
 
     @Column(nullable = false)
-    private String demandado;
+    private String sujetos;
 
     @Column(nullable = false)
-    private String demandante;
-
-    @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fecharadicado;
 
     @Column(nullable = false)

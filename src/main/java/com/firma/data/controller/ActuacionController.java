@@ -1,9 +1,12 @@
 package com.firma.data.controller;
 
+import com.firma.data.model.Actuacion;
 import com.firma.data.model.EstadoActuacion;
+import com.firma.data.model.RegistroCorreo;
 import com.firma.data.payload.request.ActuacionRequest;
 import com.firma.data.service.intf.IActuacionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.*;
@@ -19,8 +22,19 @@ public class ActuacionController {
     private IActuacionService actuacionService;
 
     @PostMapping("/save")
-    public ResponseEntity<?> saveActuacion(@RequestBody Set<ActuacionRequest> actuacionRequest){
+    public ResponseEntity<?> saveActuacion(@RequestBody Actuacion actuacionRequest){
         return actuacionService.saveActuacion(actuacionRequest);
+    }
+
+    @PostMapping("/registroCorreo/save")
+    public ResponseEntity<?> saveRegistroCorreo(@RequestBody RegistroCorreo registroCorreo){
+        return actuacionService.saveRegistroCorreo(registroCorreo);
+    }
+
+
+    @PostMapping("/save/all")
+    public ResponseEntity<?> saveActuacion(@RequestBody Set<Actuacion> actuacionRequest){
+        return actuacionService.saveActuaciones(actuacionRequest);
     }
 
     @GetMapping("/get/all/send")
@@ -28,9 +42,9 @@ public class ActuacionController {
         return actuacionService.findAllActuacionesNotSend();
     }
 
-    @PutMapping("/update/send")
-    public ResponseEntity <?> updateActuacionSend(@RequestBody Set <Integer> actuacionesIds){
-        return actuacionService.updateActuacionSend(actuacionesIds);
+    @PutMapping("/update")
+    public ResponseEntity <?> updateActuacionSend(@RequestBody Actuacion actuacion){
+        return actuacionService.updateActuacionSend(actuacion);
     }
 
     @GetMapping("/get/all/abogado/filter")
@@ -58,17 +72,23 @@ public class ActuacionController {
         return actuacionService.findActuacion(id);
     }
 
+    @GetMapping("/get/last")
+    public ResponseEntity <?> getLastActuacionByProcess(@RequestParam Integer processid){
+        return actuacionService.findLastActuacion(processid);
+    }
+
+    @GetMapping("/get/byNoVisto")
+    public ResponseEntity<?> getActuacionesByNoVisto(@RequestParam Integer firmaId){
+        return new ResponseEntity<>(actuacionService.findByNoVisto(firmaId), HttpStatus.OK);
+    }
+
     @GetMapping("/estadoActuacion/get/all")
     public ResponseEntity<?> getAllEstadoActuacion(){
         return actuacionService.findAllEstadoActuacion();
     }
 
     @GetMapping("/estadoActuacion/get")
-    public ResponseEntity<?> getEstadoActuacion(@RequestParam String estadoActuacionName){
-        EstadoActuacion estadoActuacion = actuacionService.findEstadoActuacionByName(estadoActuacionName);
-        if (estadoActuacion == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(estadoActuacion);
+    public ResponseEntity<?> getEstadoActuacion(@RequestParam String state){
+        return actuacionService.findEstadoActuacionByName(state);
     }
 }

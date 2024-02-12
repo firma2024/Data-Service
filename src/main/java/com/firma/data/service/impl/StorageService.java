@@ -36,7 +36,7 @@ public class StorageService implements IStorageService {
             return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
         }
         user.setImg(ImageUtils.compressImage(file.getBytes()));
-        userService.update(user);
+        userService.updateUser(user);
         return new ResponseEntity<>("Foto alamacenada", HttpStatus.OK);
     }
 

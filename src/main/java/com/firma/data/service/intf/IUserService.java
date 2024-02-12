@@ -7,16 +7,11 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface IUserService {
-    ResponseEntity<?> saveAbogado(UsuarioRequest userRequest);
-    ResponseEntity<?> saveJefe(UsuarioRequest userRequest);
-    ResponseEntity<?> saveAdmin(UsuarioRequest userRequest);
-    ResponseEntity<?> updateAbogado(UsuarioRequest userRequest);
-    ResponseEntity<?> updateJefe(UsuarioRequest userRequest);
+    ResponseEntity<?> saveUser(UsuarioRequest userRequest);
+    ResponseEntity<?> updateUser(Usuario user);
     ResponseEntity<?> deleteUser(Integer id);
-    ResponseEntity<?> getInfoAbogado(Integer id);
-    ResponseEntity<?> getInfoJefe(Integer id);
     ResponseEntity<?> findAllAbogadosNames(Integer firmaId);
-    ResponseEntity<?> findAllAbogadosByFirmaFilter(Integer numProcesosInicial, Integer numProcesosFinal, List<String> especialidades, Integer firmaId, Integer page, Integer size);
+    ResponseEntity<?> findAllAbogadosByFirmaFilter(Integer numProcesosInicial, Integer numProcesosFinal, List<String> especialidades, Integer firmaId, Integer rolId, Integer page, Integer size);
     ResponseEntity<?> findByUserName(String name);
     ResponseEntity<?> findRoleByUser(String userName);
     ResponseEntity<?> saveRol(String name);
@@ -27,5 +22,9 @@ public interface IUserService {
     ResponseEntity<?> findByNameTipoDocumento(String name);
     ResponseEntity<?> saveTipoDocumento(String name);
     Usuario findById(Integer userId);
-    void update(Usuario user);
+    ResponseEntity<?> getUserById(Integer id);
+    ResponseEntity<?> getAssingedProcesses(Integer id);
+    ResponseEntity<?> findRolByName(String name);
+    ResponseEntity<?> findTipoAbogadoByName(String name);
+    ResponseEntity<?> findTipoDocumentoByName(String name);
 }
