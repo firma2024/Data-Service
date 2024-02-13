@@ -3,8 +3,6 @@ package com.firma.data.service.intf;
 import com.firma.data.model.Audiencia;
 import com.firma.data.model.Enlace;
 import com.firma.data.model.Proceso;
-import com.firma.data.payload.request.AudienciaRequest;
-import com.firma.data.payload.request.EnlaceRequest;
 import com.firma.data.payload.request.ProcessRequest;
 import org.springframework.http.ResponseEntity;
 

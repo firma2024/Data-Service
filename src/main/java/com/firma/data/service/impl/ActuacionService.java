@@ -1,13 +1,10 @@
 package com.firma.data.service.impl;
 
 import com.firma.data.model.Actuacion;
-import com.firma.data.model.Enlace;
 import com.firma.data.model.EstadoActuacion;
 import com.firma.data.model.RegistroCorreo;
-import com.firma.data.payload.response.ActuacionResponse;
 import com.firma.data.payload.response.PageableResponse;
 import com.firma.data.repository.ActuacionRepository;
-import com.firma.data.repository.EnlaceRepository;
 import com.firma.data.repository.EstadoActuacionRepository;
 import com.firma.data.repository.RegistroCorreoRepository;
 import com.firma.data.service.intf.IActuacionService;
@@ -22,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
 
@@ -35,9 +31,6 @@ public class ActuacionService implements IActuacionService {
     private RegistroCorreoRepository registroCorreoRepository;
     @Autowired
     private EstadoActuacionRepository estadoActuacionRepository;
-    @Autowired
-    private EnlaceRepository enlaceRepository;
-    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Transactional
     @Override
@@ -121,8 +114,9 @@ public class ActuacionService implements IActuacionService {
     }
 
     @Override
-    public void update(Actuacion actuacion) {
+    public String update(Actuacion actuacion) {
         actuacionRepository.save(actuacion);
+        return "Actuacion actualizada";
     }
 
     @Override
@@ -150,13 +144,13 @@ public class ActuacionService implements IActuacionService {
     }
 
     @Override
-    public List<Actuacion> findByNoVisto(Integer id) {
-        return actuacionRepository.findByNoVisto(id);
+    public List<Actuacion> findByNoVisto(Integer processId) {
+        return actuacionRepository.findByNoVisto(processId);
     }
 
     @Override
-    public ResponseEntity<?> findLastActuacion(Integer id) {
-        return new ResponseEntity<>(actuacionRepository.findLastActuacion(id), HttpStatus.OK);
+    public ResponseEntity<?> findLastActuacion(Integer processId) {
+        return new ResponseEntity<>(actuacionRepository.findLastActuacion(processId), HttpStatus.OK);
     }
     @Transactional
     @Override
