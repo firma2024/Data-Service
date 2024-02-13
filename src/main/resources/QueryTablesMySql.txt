@@ -1,0 +1,117 @@
+CREATE TABLE Actuacion (
+  id                int(10) NOT NULL AUTO_INCREMENT,
+  actuacion         varchar(255) NOT NULL,
+  anotacion         varchar(455),
+  fechaactuacion    date NOT NULL,
+  fecharegistro     date NOT NULL,
+  documento         longblob,
+  existedoc         bit(1) NOT NULL,
+  procesoid         int(10) NOT NULL,
+  enviado           char(255) NOT NULL,
+  fechainicia       date,
+  fechafinaliza     date,
+  estadoactuacionid int(10) NOT NULL,
+  PRIMARY KEY (id));
+CREATE TABLE Audiencia (
+  id        int(10) NOT NULL AUTO_INCREMENT,
+  enlace    varchar(255) NOT NULL,
+  procesoid int(10) NOT NULL,
+  nombre    varchar(255) NOT NULL,
+  PRIMARY KEY (id));
+CREATE TABLE Despacho (
+  id            int(10) NOT NULL AUTO_INCREMENT,
+  nombre        varchar(255) NOT NULL,
+  PRIMARY KEY (id));
+CREATE TABLE Enlace(
+  id            int(10) NOT NULL AUTO_INCREMENT,
+  url           varchar(255),
+  fechaconsulta date,
+  despachoid    int(10) NOT NULL,
+  PRIMARY KEY (id));
+CREATE TABLE Empleado (
+  id        int(11) NOT NULL AUTO_INCREMENT,
+  usuarioid int(10) NOT NULL UNIQUE,
+  firmaid   int(10) NOT NULL,
+  PRIMARY KEY (id));
+CREATE TABLE EspecialidadAbogado (
+  id            int(11) NOT NULL AUTO_INCREMENT,
+  usuarioid     int(10) NOT NULL,
+  tipoabogadoid int(10) NOT NULL,
+  PRIMARY KEY (id),
+  CONSTRAINT unique_especialidad
+    UNIQUE (usuarioid, tipoabogadoid));
+CREATE TABLE EstadoActuacion (
+  id     int(10) NOT NULL AUTO_INCREMENT,
+  nombre varchar(255) NOT NULL UNIQUE,
+  PRIMARY KEY (id));
+CREATE TABLE EstadoProceso (
+  id     int(10) NOT NULL AUTO_INCREMENT,
+  nombre varchar(255) NOT NULL UNIQUE,
+  PRIMARY KEY (id));
+CREATE TABLE Firma (
+  id        int(10) NOT NULL AUTO_INCREMENT,
+  nombre    varchar(255) NOT NULL,
+  direccion varchar(255) NOT NULL UNIQUE,
+  PRIMARY KEY (id));
+CREATE TABLE Proceso (
+  id                  int(10) NOT NULL AUTO_INCREMENT,
+  radicado            varchar(255) NOT NULL UNIQUE,
+  numeroproceso       bigint(19) NOT NULL UNIQUE,
+  sujetos           varchar(255) NOT NULL,
+  fecharadicado       date NOT NULL,
+  ubicacionexpediente varchar(255) NOT NULL,
+  eliminado           char(255) NOT NULL,
+  empleadoid          int(10) NOT NULL,
+  firmaid             int(10) NOT NULL,
+  despachoid          int(10) NOT NULL,
+  tipoprocesoid       int(10) NOT NULL,
+  estadoprocesoid     int(10) NOT NULL,
+  PRIMARY KEY (id));
+CREATE TABLE RegistroCorreo (
+  id     int(10) NOT NULL AUTO_INCREMENT,
+  correo varchar(255) NOT NULL,
+  fecha  datetime NOT NULL,
+  PRIMARY KEY (id));
+CREATE TABLE Rol (
+  id     int(10) NOT NULL AUTO_INCREMENT,
+  nombre varchar(255) NOT NULL UNIQUE,
+  PRIMARY KEY (id));
+CREATE TABLE TipoAbogado (
+  id     int(10) NOT NULL AUTO_INCREMENT,
+  nombre varchar(255) NOT NULL UNIQUE,
+  PRIMARY KEY (id));
+CREATE TABLE TipoDocumento (
+  id     int(10) NOT NULL AUTO_INCREMENT,
+  nombre varchar(255) NOT NULL UNIQUE,
+  PRIMARY KEY (id));
+CREATE TABLE TipoProceso (
+  id     int(10) NOT NULL AUTO_INCREMENT,
+  nombre varchar(255) NOT NULL UNIQUE,
+  PRIMARY KEY (id));
+CREATE TABLE Usuario (
+  id              int(10) NOT NULL AUTO_INCREMENT,
+  username        varchar(255) NOT NULL UNIQUE,
+  telefono        bigint(19) NOT NULL UNIQUE,
+  identificacion  bigint(19) NOT NULL UNIQUE,
+  nombres         varchar(255) NOT NULL,
+  eliminado           char(255) NOT NULL,
+  correo          varchar(255) NOT NULL UNIQUE,
+  img             blob,
+  rolid           int(10) NOT NULL,
+  tipodocumentoid int(10) NOT NULL,
+  PRIMARY KEY (id));
+ALTER TABLE Usuario ADD CONSTRAINT FKUsuario38509 FOREIGN KEY (rolid) REFERENCES Rol (id);
+ALTER TABLE Usuario ADD CONSTRAINT FKUsuario402097 FOREIGN KEY (tipodocumentoid) REFERENCES TipoDocumento (id);
+ALTER TABLE Proceso ADD CONSTRAINT FKProceso509633 FOREIGN KEY (empleadoid) REFERENCES Empleado  (id);
+ALTER TABLE Proceso ADD CONSTRAINT FKProceso509634 FOREIGN KEY (firmaid) REFERENCES Firma  (id);
+ALTER TABLE Proceso ADD CONSTRAINT FKProceso755533 FOREIGN KEY (despachoid) REFERENCES Despacho (id);
+ALTER TABLE Proceso ADD CONSTRAINT FKProceso835498 FOREIGN KEY (tipoprocesoid) REFERENCES TipoProceso (id);
+ALTER TABLE Proceso ADD CONSTRAINT FKProceso481105 FOREIGN KEY (estadoprocesoid) REFERENCES EstadoProceso (id);
+ALTER TABLE Actuacion ADD CONSTRAINT FKActuacion941828 FOREIGN KEY (procesoid) REFERENCES Proceso (id);
+ALTER TABLE Actuacion ADD CONSTRAINT FKActuacion76898 FOREIGN KEY (estadoactuacionid) REFERENCES EstadoActuacion (id);
+ALTER TABLE Audiencia ADD CONSTRAINT FKAudiencia65438 FOREIGN KEY (procesoid) REFERENCES Proceso (id);
+ALTER TABLE Empleado ADD CONSTRAINT FKEmpleado820624 FOREIGN KEY (usuarioid) REFERENCES Usuario (id);
+ALTER TABLE Empleado ADD CONSTRAINT FKEmpleado120068 FOREIGN KEY (firmaid) REFERENCES Firma (id);
+ALTER TABLE EspecialidadAbogado ADD CONSTRAINT FKEspecialid398188 FOREIGN KEY (usuarioid) REFERENCES Usuario (id);
+ALTER TABLE EspecialidadAbogado ADD CONSTRAINT FKEspecialid308023 FOREIGN KEY (tipoabogadoid) REFERENCES TipoAbogado (id);
+ALTER TABLE Enlace ADD CONSTRAINT FKEnlace820624 FOREIGN KEY (despachoid) REFERENCES Despacho (id);
