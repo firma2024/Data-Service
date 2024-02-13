@@ -2,111 +2,93 @@ package com.firma.data.service.impl;
 
 import com.firma.data.model.Actuacion;
 import com.firma.data.model.Usuario;
-import com.firma.data.payload.response.FileResponse;
+import com.firma.data.payload.response.ActuacionDocumentResponse;
 import com.firma.data.service.intf.IActuacionService;
 import com.firma.data.service.intf.IStorageService;
-import com.firma.data.service.intf.IUsuarioService;
+import com.firma.data.service.intf.IUserService;
 import com.firma.data.utils.ImageUtils;
-import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import java.io.*;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 @Service
 public class StorageService implements IStorageService {
 
     @Autowired
-    private IUsuarioService usuarioService;
+    private IUserService userService;
     @Autowired
     private IActuacionService actuacionService;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     @Override
-    public String uploadImage(MultipartFile file, Integer userId) throws IOException {
-        Usuario user = usuarioService.findById(userId);
+    public ResponseEntity<?> uploadPhotoUser(MultipartFile file, Integer userId) throws IOException {
+        Usuario user = userService.findById(userId);
         if (user == null) {
-            return "Usuario no encontrado";
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
         }
         user.setImg(ImageUtils.compressImage(file.getBytes()));
-        usuarioService.update(user);
-        return null;
+        userService.updateUser(user);
+        return new ResponseEntity<>("Foto alamacenada", HttpStatus.OK);
     }
 
     @Override
-    public byte[] downloadImage(Integer userId) {
-        Usuario user = usuarioService.findById(userId);
-        return ImageUtils.decompressFile(user.getImg());
+    public ResponseEntity<?> downloadPhotoUser(Integer userId) {
+        Usuario user = userService.findById(userId);
+        if (user == null){
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+        }
+        if (user.getImg() == null){
+            return new ResponseEntity<>("Foto no encontrada", HttpStatus.NOT_FOUND);
+        }
+        byte[] image = ImageUtils.decompressFile(user.getImg());
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(image);
     }
 
     @Override
-    public String uploadDocument(MultipartFile file, Integer actuacionId) throws IOException {
+    public ResponseEntity<?> uploadDocument(MultipartFile file, Integer actuacionId) throws IOException {
         Actuacion actuacion = actuacionService.findById(actuacionId);
         if (actuacion == null) {
-            return "Actuacion no encontrada";
+            return new ResponseEntity<>("Actuacion no encontrada", HttpStatus.NOT_FOUND);
         }
         byte[] document = ImageUtils.compressImage(file.getBytes());
         actuacion.setDocumento(document);
         actuacionService.update(actuacion);
-        return null;
+        return new ResponseEntity<>("Documento almacenado", HttpStatus.OK);
     }
 
     @Override
-    public byte[] downloadDocument(Integer actuacionId) {
+    public ResponseEntity<?> downloadDocument(Integer actuacionId) {
         Actuacion actuacion = actuacionService.findById(actuacionId);
-        return ImageUtils.decompressFile(actuacion.getDocumento());
+        byte[] document = ImageUtils.decompressFile(actuacion.getDocumento());
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(document);
     }
 
     @Override
-    public FileResponse downloadAllDocuments(Integer procesoId) throws IOException {
+    public ResponseEntity<?> downloadAllDocuments(Integer procesoId) {
         Set<Actuacion> actuaciones = actuacionService.findAllByProcesoAndDocument(procesoId);
-        String radicado = null;
+        List<ActuacionDocumentResponse> documents = new ArrayList<>();
 
-        File tempFolder = new File("temp");
-        if (!tempFolder.exists()) {
-            tempFolder.mkdirs();
-        }
-        File zipFolder = new File("zip");
-        if (!zipFolder.exists()) {
-            zipFolder.mkdirs();
-        }
-
-        // Crear archivos PDF y guardarlos en la carpeta temporal
         for (Actuacion actuacion : actuaciones) {
-            byte[] documentData = ImageUtils.decompressFile(actuacion.getDocumento());
-            File pdfFile = new File(tempFolder, "providencia_" + actuacion.getFechaactuacion().format(formatter) + ".pdf");
-            FileOutputStream fos = new FileOutputStream(pdfFile);
-            radicado = actuacion.getProceso().getRadicado();
-            fos.write(documentData);
-            fos.close();
+            ActuacionDocumentResponse acDoc = ActuacionDocumentResponse.builder()
+                    .document(ImageUtils.decompressFile(actuacion.getDocumento()))
+                    .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
+                    .radicado(actuacion.getProceso().getRadicado())
+                    .build();
+            documents.add(acDoc);
         }
-
-        // Comprimir los archivos PDF en un archivo ZIP
-        File zipFile = new File("zip/providencias_" + radicado + ".zip");
-        ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFile));
-
-        for (File pdfFile : tempFolder.listFiles()) {
-            ZipEntry zipEntry = new ZipEntry(pdfFile.getName());
-            zipOut.putNextEntry(zipEntry);
-
-            byte[] bytes = FileUtils.readFileToByteArray(pdfFile);
-            zipOut.write(bytes);
-
-            pdfFile.delete();
-        }
-
-        zipOut.close();
-        FileUtils.deleteDirectory(tempFolder);
-
-        return FileResponse.builder()
-                .file(FileUtils.readFileToByteArray(zipFile))
-                .fileName("providencias_" + radicado + ".zip")
-                .build();
+        return new ResponseEntity<>(documents, HttpStatus.OK);
     }
 }

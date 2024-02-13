@@ -9,21 +9,18 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 @Setter
-@Table(name = "audiencia")
-public class Audiencia {
-
+@Table(name = "especialidadabogado")
+public class EspecialidadAbogado {
     @Id
     @Column(nullable = false, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false)
-    private String enlace;
-
-    @Column(nullable = false)
-    private String nombre;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "usuarioid", nullable = false)
+    private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "procesoid", nullable = false)
-    private Proceso proceso;
+    @JoinColumn(name = "tipoabogadoid", nullable = false)
+    private TipoAbogado tipoAbogado;
 }

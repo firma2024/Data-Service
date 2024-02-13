@@ -26,21 +26,25 @@ public class Actuacion {
     private String anotacion;
 
     @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechaactuacion;
 
     @Column(nullable = false)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fecharegistro;
 
     @Column(nullable = true)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechainicia;
 
     @Column(nullable = true)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fechafinaliza;
 
     @Column(nullable = false)
     private Boolean existedoc;
     @Lob
-    @Column(nullable = true, length = 1000000)
+    @Column(nullable = true, length = 10000000)
     private byte[] documento;
 
     @Column(nullable = false)

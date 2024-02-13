@@ -1,13 +1,16 @@
 package com.firma.data.service.intf;
 
+import com.firma.data.model.Empleado;
 import com.firma.data.model.Firma;
-import com.firma.data.model.Usuario;
+import com.firma.data.payload.request.FirmaRequest;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 public interface IFirmaService {
-    Firma saveFirma(Firma firma);
-    List<Firma> findAll();
-    Firma findById(Integer id);
-    List<Firma> findByName(String name);
+    ResponseEntity<?> saveFirma(FirmaRequest firma);
+    ResponseEntity<?> findFirmaByUser(String userName);
+    ResponseEntity<?> findFirmaById(Integer id);
+    Empleado saveEmpleado(Empleado empleado);
+    ResponseEntity<?> findEmpleadoByUsuario(Integer idAbogado);
 }

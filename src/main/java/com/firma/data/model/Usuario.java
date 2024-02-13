@@ -25,9 +25,6 @@ public class Usuario {
     private String username;
 
     @Column(nullable = false)
-    private String password;
-
-    @Column(nullable = false)
     private String nombres;
 
     @Column(nullable = false)
@@ -39,8 +36,11 @@ public class Usuario {
     @Column(nullable = false)
     private String correo;
 
+    @Column(nullable = false)
+    private Character eliminado;
+
     @Lob
-    @Column(nullable = true,length = 1000)
+    @Column(length = 1000)
     private byte[] img;
 
     @ManyToOne(fetch = FetchType.EAGER)

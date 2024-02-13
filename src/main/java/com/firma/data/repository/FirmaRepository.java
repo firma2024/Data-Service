@@ -10,6 +10,9 @@ import java.util.List;
 
 @Repository
 public interface FirmaRepository extends JpaRepository<Firma, Integer> {
-    @Query("SELECT f FROM Firma f WHERE f.nombre = :nombre")
-    List<Firma> findByName(String nombre);
+    @Query("SELECT f FROM Firma f " +
+            "JOIN Empleado e ON e.firma.id = f.id " +
+            "JOIN Usuario u ON e.usuario.id = u.id " +
+            "WHERE u.username = :nombre ")
+    Firma findByUser(String nombre);
 }
