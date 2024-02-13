@@ -1,9 +1,7 @@
 package com.firma.data.controller;
 
 import com.firma.data.model.Actuacion;
-import com.firma.data.model.EstadoActuacion;
 import com.firma.data.model.RegistroCorreo;
-import com.firma.data.payload.request.ActuacionRequest;
 import com.firma.data.service.intf.IActuacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

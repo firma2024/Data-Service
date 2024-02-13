@@ -60,7 +60,9 @@ public class UserService implements IUserService {
     @Override
     public ResponseEntity<?> deleteUser(Integer id) {
         Usuario user = usuarioRepository.findById(id).orElse(null);
-        assert user != null;
+        if (user == null) {
+            return new ResponseEntity<>("Usuario no encontrado", HttpStatus.NOT_FOUND);
+        }
         user.setEliminado('S');
         usuarioRepository.save(user);
         return new ResponseEntity<>("Usuario Eliminado", HttpStatus.OK);
@@ -76,7 +78,7 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public ResponseEntity<?> findAllAbogadosByFirmaFilter(Integer numProcesosInicial, Integer numProcesosFinal, List<String> especialidades, Integer firmaId, Integer rolId, Integer page, Integer size) {
+    public ResponseEntity<?> findAllAbogadosByFirmaFilter(List<String> especialidades, Integer firmaId, Integer rolId, Integer page, Integer size) {
         Pageable paging = PageRequest.of(page, size, Sort.by("nombres").ascending());
         Page<Usuario> pageUsers = usuarioRepository.findAbogadosFirmaByFilter(especialidades, paging, firmaId, rolId);
 
@@ -123,15 +125,6 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public ResponseEntity<?> tipoAbogadoFindByName(String name) {
-        TipoAbogado tipoAbogado = tipoAbogadoRepository.findByNombre(name);
-        if (tipoAbogado == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(tipoAbogado, HttpStatus.OK);
-    }
-
-    @Override
     public ResponseEntity<?> saveTipoAbogado(String name) {
         TipoAbogado tipoAbogado = TipoAbogado.builder()
                 .nombre(name)
@@ -143,15 +136,6 @@ public class UserService implements IUserService {
     @Override
     public ResponseEntity<?> findAllTipoDocumento() {
         return new ResponseEntity<>(tipoDocumentoRepository.findAll(), HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<?> findByNameTipoDocumento(String name) {
-        TipoDocumento tipoDocumento = tipoDocumentoRepository.findByNombre(name);
-        if (tipoDocumento == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(tipoDocumento, HttpStatus.OK);
     }
 
     @Override

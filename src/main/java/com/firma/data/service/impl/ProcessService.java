@@ -1,14 +1,10 @@
 package com.firma.data.service.impl;
 
 import com.firma.data.model.*;
-import com.firma.data.payload.request.*;
+import com.firma.data.payload.request.ProcessRequest;
 import com.firma.data.payload.response.PageableResponse;
-import com.firma.data.payload.response.ProcesoAbogadoResponse;
-import com.firma.data.payload.response.ProcesoJefeResponse;
-import com.firma.data.payload.response.ProcesoResponse;
 import com.firma.data.repository.*;
 import com.firma.data.service.intf.IActuacionService;
-import com.firma.data.service.intf.IFirmaService;
 import com.firma.data.service.intf.IProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,9 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -165,6 +158,9 @@ public class ProcessService implements IProcessService {
     @Override
     public ResponseEntity<?> updateAudiencia(Integer id, String enlace) {
         Audiencia audiencia = audienciaRepository.findById(id).orElse(null);
+        if (audiencia == null) {
+            return new ResponseEntity<>("Audiencia no encontrada", HttpStatus.NOT_FOUND);
+        }
         audiencia.setEnlace(enlace);
         audienciaRepository.save(audiencia);
         return new ResponseEntity<>("Audiencia Actualizada", HttpStatus.OK);
@@ -228,6 +224,9 @@ public class ProcessService implements IProcessService {
     @Override
     public ResponseEntity<?> findProcessByRadicado(String radicado) {
         Proceso proceso = processRepository.findByRadicado(radicado);
+        if (proceso == null) {
+            return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(proceso, HttpStatus.OK);
     }
 
