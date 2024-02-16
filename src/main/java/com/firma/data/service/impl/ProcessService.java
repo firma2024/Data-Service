@@ -223,11 +223,7 @@ public class ProcessService implements IProcessService {
 
     @Override
     public ResponseEntity<?> findProcessByRadicado(String radicado) {
-        Proceso proceso = processRepository.findByRadicado(radicado);
-        if (proceso == null) {
-            return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(proceso, HttpStatus.OK);
+        return new ResponseEntity<>(processRepository.findByRadicado(radicado), HttpStatus.OK);
     }
 
     @Override

@@ -307,16 +307,7 @@ class ProcessServiceTest {
         assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
-    @Test
-    void shouldFindProcessByRadicadoNotFound(){
-        String radicado = "radicado";
-        when(procesoRepository.findByRadicado(radicado)).thenReturn(null);
 
-        ResponseEntity<?> response = processService.findProcessByRadicado(radicado);
-
-        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("Proceso no encontrado", response.getBody());
-    }
 
     @Test
     void shouldFindEnlaceByDespachoAndYear(){
