@@ -236,4 +236,9 @@ public class ProcessService implements IProcessService {
         return new ResponseEntity<>(despachoRepository.findDespachoByNombre(name), HttpStatus.OK);
     }
 
+    @Override
+    public ResponseEntity<?>  findAllDespachosWithDateActuacion(){
+        return new ResponseEntity<>(despachoRepository.findAllDespachosWithDateActuacion(), HttpStatus.OK);
+    }
+
 }

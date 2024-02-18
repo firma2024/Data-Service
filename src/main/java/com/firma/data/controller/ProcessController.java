@@ -140,4 +140,9 @@ public class ProcessController {
     public ResponseEntity<?> getEnlaceByDespachoAndYear(@RequestParam Integer id, @RequestParam String year){
         return processService.findEnlaceByDespachoAndYear(id, year);
     }
+
+    @GetMapping("/despacho/get/all/date")
+    public ResponseEntity<?> getAllDespachosWithDateActuacion(){
+        return processService.findAllDespachosWithDateActuacion();
+    }
 }

@@ -32,4 +32,5 @@ public interface IProcessService {
     ResponseEntity<?> findProcessByRadicado(String radicado);
     ResponseEntity<?> findEnlaceByDespachoAndYear(Integer id, String year);
     ResponseEntity<?> findDespachoByName(String name);
+    ResponseEntity<?>  findAllDespachosWithDateActuacion();
 }
