@@ -59,7 +59,7 @@ CREATE TABLE Proceso (
   numeroproceso       bigint(19) NOT NULL UNIQUE,
   sujetos           varchar(455) NOT NULL,
   fecharadicado       date NOT NULL,
-  ubicacionexpediente varchar(255) NOT NULL,
+  ubicacionexpediente varchar(255),
   eliminado           char(255) NOT NULL,
   empleadoid          int(10) NOT NULL,
   firmaid             int(10) NOT NULL,
