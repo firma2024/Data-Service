@@ -4,7 +4,7 @@ import com.firma.data.model.Audiencia;
 import com.firma.data.model.Enlace;
 import com.firma.data.model.Proceso;
 import com.firma.data.payload.request.ProcessRequest;
-import com.firma.data.service.intf.IProcessService;
+import com.firma.data.intfService.IProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;

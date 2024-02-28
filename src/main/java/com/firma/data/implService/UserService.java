@@ -1,5 +1,6 @@
-package com.firma.data.service.impl;
+package com.firma.data.implService;
 
+import com.firma.data.intfService.IUserService;
 import com.firma.data.model.*;
 import com.firma.data.payload.request.UsuarioRequest;
 import com.firma.data.payload.response.PageableResponse;
@@ -7,8 +8,7 @@ import com.firma.data.repository.RolRepository;
 import com.firma.data.repository.TipoAbogadoRepository;
 import com.firma.data.repository.TipoDocumentoRepository;
 import com.firma.data.repository.UsuarioRepository;
-import com.firma.data.service.intf.IFirmaService;
-import com.firma.data.service.intf.IUserService;
+import com.firma.data.intfService.IFirmaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

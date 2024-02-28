@@ -2,7 +2,7 @@ package com.firma.data.controller;
 
 import com.firma.data.model.Usuario;
 import com.firma.data.payload.request.UsuarioRequest;
-import com.firma.data.service.intf.IUserService;
+import com.firma.data.intfService.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;

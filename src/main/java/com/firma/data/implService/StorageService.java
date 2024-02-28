@@ -1,11 +1,11 @@
-package com.firma.data.service.impl;
+package com.firma.data.implService;
 
+import com.firma.data.intfService.IActuacionService;
+import com.firma.data.intfService.IStorageService;
+import com.firma.data.intfService.IUserService;
 import com.firma.data.model.Actuacion;
 import com.firma.data.model.Usuario;
 import com.firma.data.payload.response.ActuacionDocumentResponse;
-import com.firma.data.service.intf.IActuacionService;
-import com.firma.data.service.intf.IStorageService;
-import com.firma.data.service.intf.IUserService;
 import com.firma.data.utils.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

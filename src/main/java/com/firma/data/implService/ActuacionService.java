@@ -1,5 +1,6 @@
-package com.firma.data.service.impl;
+package com.firma.data.implService;
 
+import com.firma.data.intfService.IActuacionService;
 import com.firma.data.model.Actuacion;
 import com.firma.data.model.EstadoActuacion;
 import com.firma.data.model.RegistroCorreo;
@@ -7,7 +8,6 @@ import com.firma.data.payload.response.PageableResponse;
 import com.firma.data.repository.ActuacionRepository;
 import com.firma.data.repository.EstadoActuacionRepository;
 import com.firma.data.repository.RegistroCorreoRepository;
-import com.firma.data.service.intf.IActuacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

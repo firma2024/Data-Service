@@ -1,7 +1,7 @@
 package com.firma.data.controller;
 
 import com.firma.data.payload.request.FirmaRequest;
-import com.firma.data.service.intf.IFirmaService;
+import com.firma.data.intfService.IFirmaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;

@@ -1,9 +1,10 @@
-package com.firma.data.service.impl;
+package com.firma.data.service;
 
+import com.firma.data.implService.ProcessService;
 import com.firma.data.model.*;
 import com.firma.data.payload.request.ProcessRequest;
 import com.firma.data.repository.*;
-import com.firma.data.service.intf.IActuacionService;
+import com.firma.data.intfService.IActuacionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

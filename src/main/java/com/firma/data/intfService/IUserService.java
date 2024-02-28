@@ -1,4 +1,4 @@
-package com.firma.data.service.intf;
+package com.firma.data.intfService;
 
 import com.firma.data.model.Usuario;
 import com.firma.data.payload.request.UsuarioRequest;

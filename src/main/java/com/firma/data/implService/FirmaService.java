@@ -1,11 +1,11 @@
-package com.firma.data.service.impl;
+package com.firma.data.implService;
 
+import com.firma.data.intfService.IFirmaService;
 import com.firma.data.model.Empleado;
 import com.firma.data.model.Firma;
 import com.firma.data.payload.request.FirmaRequest;
 import com.firma.data.repository.EmpleadoRepository;
 import com.firma.data.repository.FirmaRepository;
-import com.firma.data.service.intf.IFirmaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
