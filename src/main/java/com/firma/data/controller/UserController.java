@@ -1,6 +1,7 @@
 package com.firma.data.controller;
 
 import com.firma.data.model.Usuario;
+import com.firma.data.payload.request.UserRequest;
 import com.firma.data.payload.request.UsuarioRequest;
 import com.firma.data.intfService.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,11 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @PostMapping("/check/insert")
+    public ResponseEntity<?> checkInsertUser(@RequestBody UserRequest userRequest) {
+        return userService.checkInsertUser(userRequest);
+    }
 
     @PostMapping("/save")
     public ResponseEntity<?> saveUser(@RequestBody UsuarioRequest userRequest) {

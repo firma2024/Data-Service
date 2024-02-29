@@ -2,6 +2,7 @@ package com.firma.data.implService;
 
 import com.firma.data.intfService.IUserService;
 import com.firma.data.model.*;
+import com.firma.data.payload.request.UserRequest;
 import com.firma.data.payload.request.UsuarioRequest;
 import com.firma.data.payload.response.PageableResponse;
 import com.firma.data.repository.RolRepository;
@@ -191,5 +192,28 @@ public class UserService implements IUserService {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(tipoDocumento, HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> checkInsertUser(UserRequest userRequest) {
+        Usuario user;
+        user = usuarioRepository.findByUsername(userRequest.getUsername());
+        if (user != null) {
+            return new ResponseEntity<>("Usuario ya existe", HttpStatus.CONFLICT);
+        }
+        user = usuarioRepository.findByCorreo(userRequest.getCorreo());
+        if (user != null) {
+            return new ResponseEntity<>("Correo ya existe", HttpStatus.CONFLICT);
+        }
+        user = usuarioRepository.findByIdentificacion(userRequest.getIdentificacion());
+        if (user != null) {
+            return new ResponseEntity<>("Identificacion ya existe", HttpStatus.CONFLICT);
+        }
+        user = usuarioRepository.findByTelefono(userRequest.getTelefono());
+        if (user != null) {
+            return new ResponseEntity<>("Telefono ya existe", HttpStatus.CONFLICT);
+        }
+
+        return new ResponseEntity<>("Usuario no existe", HttpStatus.OK);
     }
 }
