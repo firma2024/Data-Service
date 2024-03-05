@@ -49,7 +49,7 @@ public class UserService implements IUserService {
             firmaService.saveEmpleado(userRequest.getEmployee());
         }
 
-        return new ResponseEntity<>("Usuario " + userRequest.getUser().getRol().getNombre() + " Creado", HttpStatus.OK);
+        return new ResponseEntity<>(user.getId(), HttpStatus.OK);
     }
 
     @Override
