@@ -82,12 +82,14 @@ public class StorageService implements IStorageService {
         List<ActuacionDocumentResponse> documents = new ArrayList<>();
 
         for (Actuacion actuacion : actuaciones) {
-            ActuacionDocumentResponse acDoc = ActuacionDocumentResponse.builder()
-                    .document(ImageUtils.decompressFile(actuacion.getDocumento()))
-                    .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
-                    .radicado(actuacion.getProceso().getRadicado())
-                    .build();
-            documents.add(acDoc);
+            if (actuacion.getDocumento() != null){
+                ActuacionDocumentResponse acDoc = ActuacionDocumentResponse.builder()
+                        .document(ImageUtils.decompressFile(actuacion.getDocumento()))
+                        .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
+                        .radicado(actuacion.getProceso().getRadicado())
+                        .build();
+                documents.add(acDoc);
+            }
         }
         return new ResponseEntity<>(documents, HttpStatus.OK);
     }
