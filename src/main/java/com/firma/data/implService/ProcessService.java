@@ -123,8 +123,18 @@ public class ProcessService implements IProcessService {
     @Override
     public ResponseEntity<?> findProcessByAbogadoFilter(Integer abogadoId, String fechaInicioStr, String fechaFinStr, List<String> estadosProceso, String tipoProceso, Integer page, Integer size) {
 
+        LocalDate fechaInicio = null;
+        LocalDate fechaFin = null;
+
+        if (fechaInicioStr != null && !fechaInicioStr.isEmpty()) {
+            fechaInicio = LocalDate.parse(fechaInicioStr);
+        }
+        if (fechaFinStr != null && !fechaFinStr.isEmpty()) {
+            fechaFin = LocalDate.parse(fechaFinStr);
+        }
+
         Pageable paging = PageRequest.of(page, size);
-        Page<Proceso> pageProcesosAbogado = processRepository.findAllByAbogado(abogadoId, fechaInicioStr, fechaFinStr, estadosProceso, tipoProceso, paging);
+        Page<Proceso> pageProcesosAbogado = processRepository.findAllByAbogado(abogadoId, fechaInicio, fechaFin, estadosProceso, tipoProceso, paging);
 
         PageableResponse<Proceso> response = PageableResponse.<Proceso>builder()
                 .data(pageProcesosAbogado.getContent())
