@@ -74,7 +74,7 @@ class ActuacionServiceTest {
         Actuacion actuacion = new Actuacion();
         when(actuacionRepository.save(actuacion)).thenReturn(actuacion);
 
-        ResponseEntity<?> response = actuacionService.updateActuacionSend(actuacion);
+        ResponseEntity<?> response = actuacionService.updateActuacion(actuacion);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Actuacion actualizada", response.getBody());

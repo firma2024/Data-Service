@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -40,9 +41,13 @@ public class ActuacionController {
         return actuacionService.findAllActuacionesNotSend();
     }
 
+    @PutMapping("/update/send")
+    public ResponseEntity <?> updateActuacionSend(@RequestBody List<Integer> actuacionIds){
+        return actuacionService.updateActuacionSend(actuacionIds);
+    }
     @PutMapping("/update")
-    public ResponseEntity <?> updateActuacionSend(@RequestBody Actuacion actuacion){
-        return actuacionService.updateActuacionSend(actuacion);
+    public ResponseEntity <?> updateActuacion(@RequestBody Actuacion actuacion){
+        return actuacionService.updateActuacion(actuacion);
     }
 
     @GetMapping("/get/all/abogado/filter")
