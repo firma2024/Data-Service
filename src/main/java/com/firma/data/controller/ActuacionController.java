@@ -81,8 +81,8 @@ public class ActuacionController {
     }
 
     @GetMapping("/get/byNoVisto")
-    public ResponseEntity<?> getActuacionesByNoVisto(@RequestParam Integer firmaId){
-        return new ResponseEntity<>(actuacionService.findByNoVisto(firmaId), HttpStatus.OK);
+    public ResponseEntity<?> getActuacionesByNoVisto(@RequestParam Integer procesoId){
+        return new ResponseEntity<>(actuacionService.findByNoVisto(procesoId), HttpStatus.OK);
     }
 
     @GetMapping("/estadoActuacion/get/all")

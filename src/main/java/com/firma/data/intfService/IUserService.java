@@ -27,4 +27,5 @@ public interface IUserService {
     ResponseEntity<?> findTipoAbogadoByName(String name);
     ResponseEntity<?> findTipoDocumentoByName(String name);
     ResponseEntity<?> checkInsertUser(UserRequest userRequest);
+    ResponseEntity<?> findAllAbogadosByFirma(Integer firmaId);
 }

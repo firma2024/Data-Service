@@ -45,4 +45,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Usuario findByCorreo(String correo);
     Usuario findByIdentificacion(BigInteger identificacion);
     Usuario findByTelefono(BigInteger telefono);
+
+    @Query("SELECT u FROM Usuario u " +
+            "JOIN Empleado e ON u.id = e.usuario.id " +
+            "JOIN Firma f ON f.id = e.firma.id " +
+            "WHERE f.id = :firmaId AND u.rol.nombre = 'ABOGADO' AND u.eliminado != 'S' " +
+            "ORDER BY u.nombres ASC")
+    List<Usuario> findAllAbogadosByFirma(Integer firmaId);
 }

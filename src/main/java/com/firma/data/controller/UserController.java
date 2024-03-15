@@ -63,8 +63,13 @@ public class UserController {
     public ResponseEntity<?> getAbogadosByFirmaFilter(@RequestParam(required = false) List<String> especialidades,
                                                       @RequestParam Integer firmaId, @RequestParam Integer roleId,
                                                       @RequestParam(defaultValue = "0") Integer page,
-                                                      @RequestParam(defaultValue = "7") Integer size){
+                                                      @RequestParam(defaultValue = "10") Integer size){
         return userService.findAllAbogadosByFirmaFilter(especialidades, firmaId, roleId, page, size);
+    }
+
+    @GetMapping("/jefe/abogados")
+    public ResponseEntity<?> getAbogadosByFirma(@RequestParam Integer firmaId){
+        return userService.findAllAbogadosByFirma(firmaId);
     }
 
     @GetMapping("/rol/get/user")

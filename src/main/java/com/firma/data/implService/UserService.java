@@ -216,4 +216,9 @@ public class UserService implements IUserService {
 
         return new ResponseEntity<>("Usuario no existe", HttpStatus.OK);
     }
+
+    @Override
+    public ResponseEntity<?> findAllAbogadosByFirma(Integer firmaId) {
+        return new ResponseEntity<>(usuarioRepository.findAllAbogadosByFirma(firmaId), HttpStatus.OK);
+    }
 }
