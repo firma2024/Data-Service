@@ -1,11 +1,11 @@
-package com.firma.data.service.impl;
+package com.firma.data.implService;
 
+import com.firma.data.intfService.IActuacionService;
+import com.firma.data.intfService.IStorageService;
+import com.firma.data.intfService.IUserService;
 import com.firma.data.model.Actuacion;
 import com.firma.data.model.Usuario;
 import com.firma.data.payload.response.ActuacionDocumentResponse;
-import com.firma.data.service.intf.IActuacionService;
-import com.firma.data.service.intf.IStorageService;
-import com.firma.data.service.intf.IUserService;
 import com.firma.data.utils.ImageUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -82,12 +82,14 @@ public class StorageService implements IStorageService {
         List<ActuacionDocumentResponse> documents = new ArrayList<>();
 
         for (Actuacion actuacion : actuaciones) {
-            ActuacionDocumentResponse acDoc = ActuacionDocumentResponse.builder()
-                    .document(ImageUtils.decompressFile(actuacion.getDocumento()))
-                    .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
-                    .radicado(actuacion.getProceso().getRadicado())
-                    .build();
-            documents.add(acDoc);
+            if (actuacion.getDocumento() != null){
+                ActuacionDocumentResponse acDoc = ActuacionDocumentResponse.builder()
+                        .document(ImageUtils.decompressFile(actuacion.getDocumento()))
+                        .fechaActuacion(actuacion.getFechaactuacion().format(formatter))
+                        .radicado(actuacion.getProceso().getRadicado())
+                        .build();
+                documents.add(acDoc);
+            }
         }
         return new ResponseEntity<>(documents, HttpStatus.OK);
     }

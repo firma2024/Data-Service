@@ -1,4 +1,4 @@
-package com.firma.data.service.intf;
+package com.firma.data.intfService;
 
 import com.firma.data.model.Actuacion;
 import com.firma.data.model.RegistroCorreo;
@@ -10,7 +10,7 @@ import java.util.Set;
 public interface IActuacionService {
     ResponseEntity<?> saveActuaciones(Set <Actuacion> actuacionRequest);
     ResponseEntity<?> findAllActuacionesNotSend();
-    ResponseEntity <?> updateActuacionSend(Actuacion actuacion);
+    ResponseEntity <?> updateActuacionSend(List<Integer> actuacionIds);
     ResponseEntity<?> findActuacionesByProcessJefeFilter(Integer processId, String fechaInicioStr, String fechaFinStr, String estadoActuacion, Integer page, Integer size);
     ResponseEntity<?> findActuacionesByProcessAbogadoFilter(Integer processId, String fechaInicioStr, String fechaFinStr, Boolean existDoc, Integer page, Integer size);
     ResponseEntity<?> findActuacion(Integer actuacionId);
@@ -24,4 +24,5 @@ public interface IActuacionService {
     ResponseEntity<?>  findLastActuacion(Integer processId);
     ResponseEntity<?> saveActuacion(Actuacion actuacionRequest);
     ResponseEntity<?> saveRegistroCorreo(RegistroCorreo registroCorreo);
+    ResponseEntity<?> updateActuacion(Actuacion actuacion);
 }

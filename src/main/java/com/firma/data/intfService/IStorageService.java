@@ -1,4 +1,4 @@
-package com.firma.data.service.intf;
+package com.firma.data.intfService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;

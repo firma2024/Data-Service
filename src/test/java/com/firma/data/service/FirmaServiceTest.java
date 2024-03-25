@@ -1,5 +1,6 @@
-package com.firma.data.service.impl;
+package com.firma.data.service;
 
+import com.firma.data.implService.FirmaService;
 import com.firma.data.model.Empleado;
 import com.firma.data.model.Firma;
 import com.firma.data.payload.request.FirmaRequest;

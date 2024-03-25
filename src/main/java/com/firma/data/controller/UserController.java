@@ -1,8 +1,9 @@
 package com.firma.data.controller;
 
 import com.firma.data.model.Usuario;
+import com.firma.data.payload.request.UserRequest;
 import com.firma.data.payload.request.UsuarioRequest;
-import com.firma.data.service.intf.IUserService;
+import com.firma.data.intfService.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -17,6 +18,11 @@ public class UserController {
 
     @Autowired
     private IUserService userService;
+
+    @PostMapping("/check/insert")
+    public ResponseEntity<?> checkInsertUser(@RequestBody UserRequest userRequest) {
+        return userService.checkInsertUser(userRequest);
+    }
 
     @PostMapping("/save")
     public ResponseEntity<?> saveUser(@RequestBody UsuarioRequest userRequest) {
@@ -57,8 +63,13 @@ public class UserController {
     public ResponseEntity<?> getAbogadosByFirmaFilter(@RequestParam(required = false) List<String> especialidades,
                                                       @RequestParam Integer firmaId, @RequestParam Integer roleId,
                                                       @RequestParam(defaultValue = "0") Integer page,
-                                                      @RequestParam(defaultValue = "7") Integer size){
+                                                      @RequestParam(defaultValue = "10") Integer size){
         return userService.findAllAbogadosByFirmaFilter(especialidades, firmaId, roleId, page, size);
+    }
+
+    @GetMapping("/jefe/abogados")
+    public ResponseEntity<?> getAbogadosByFirma(@RequestParam Integer firmaId){
+        return userService.findAllAbogadosByFirma(firmaId);
     }
 
     @GetMapping("/rol/get/user")

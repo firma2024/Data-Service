@@ -40,7 +40,7 @@ public class Usuario {
     private Character eliminado;
 
     @Lob
-    @Column(length = 1000)
+    @Column(length = 1000000000)
     private byte[] img;
 
     @ManyToOne(fetch = FetchType.EAGER)

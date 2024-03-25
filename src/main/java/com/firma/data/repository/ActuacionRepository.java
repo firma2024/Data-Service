@@ -43,6 +43,7 @@ public interface ActuacionRepository extends JpaRepository<Actuacion, Integer> {
     Actuacion findLastActuacion(Integer procesoId);
 
     @Query("SELECT a FROM Actuacion a " +
-            "WHERE a.proceso.id = :procesoId AND a.existedoc = true AND a.existedoc IS NOT NULL")
+            "JOIN Proceso p ON a.proceso.id = p.id " +
+            "WHERE p.id = :procesoId AND a.existedoc = true")
     Set<Actuacion> findAllByProcesoAndDocument(Integer procesoId);
 }

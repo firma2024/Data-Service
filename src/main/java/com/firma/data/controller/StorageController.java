@@ -1,6 +1,6 @@
 package com.firma.data.controller;
 
-import com.firma.data.service.intf.IStorageService;
+import com.firma.data.intfService.IStorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -17,7 +17,7 @@ public class StorageController {
     private IStorageService storageService;
 
     @PostMapping("/upload/photo")
-    public ResponseEntity<?> addAbogado(MultipartFile file, Integer userId){
+    public ResponseEntity<?> uploadPhoto(@RequestParam("image") MultipartFile file, Integer userId){
         try {
             return storageService.uploadPhotoUser(file, userId);
         } catch (IOException e) {

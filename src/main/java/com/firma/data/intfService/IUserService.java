@@ -1,6 +1,7 @@
-package com.firma.data.service.intf;
+package com.firma.data.intfService;
 
 import com.firma.data.model.Usuario;
+import com.firma.data.payload.request.UserRequest;
 import com.firma.data.payload.request.UsuarioRequest;
 import org.springframework.http.ResponseEntity;
 
@@ -25,4 +26,6 @@ public interface IUserService {
     ResponseEntity<?> findRolByName(String name);
     ResponseEntity<?> findTipoAbogadoByName(String name);
     ResponseEntity<?> findTipoDocumentoByName(String name);
+    ResponseEntity<?> checkInsertUser(UserRequest userRequest);
+    ResponseEntity<?> findAllAbogadosByFirma(Integer firmaId);
 }

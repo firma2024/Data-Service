@@ -34,7 +34,6 @@ public class Proceso {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate fecharadicado;
 
-    @Column(nullable = false)
     private String ubicacionexpediente;
 
     @Column(nullable = false)

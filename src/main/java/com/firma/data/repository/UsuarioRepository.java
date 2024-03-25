@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 
+import java.math.BigInteger;
 import java.util.List;
 
 
@@ -41,4 +42,14 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     Usuario findByUsername(String username);
     @Query("SELECT u FROM Usuario u WHERE u.id = :id")
     Usuario findUserById(Integer id);
+    Usuario findByCorreo(String correo);
+    Usuario findByIdentificacion(BigInteger identificacion);
+    Usuario findByTelefono(BigInteger telefono);
+
+    @Query("SELECT u FROM Usuario u " +
+            "JOIN Empleado e ON u.id = e.usuario.id " +
+            "JOIN Firma f ON f.id = e.firma.id " +
+            "WHERE f.id = :firmaId AND u.rol.nombre = 'ABOGADO' AND u.eliminado != 'S' " +
+            "ORDER BY u.nombres ASC")
+    List<Usuario> findAllAbogadosByFirma(Integer firmaId);
 }

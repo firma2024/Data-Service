@@ -1,12 +1,13 @@
-package com.firma.data.service.impl;
+package com.firma.data.implService;
 
+import com.firma.data.intfService.IActuacionService;
 import com.firma.data.model.*;
 import com.firma.data.payload.request.ProcessRequest;
 import com.firma.data.payload.response.PageableResponse;
 import com.firma.data.repository.*;
-import com.firma.data.service.intf.IActuacionService;
-import com.firma.data.service.intf.IProcessService;
+import com.firma.data.intfService.IProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,6 +37,9 @@ public class ProcessService implements IProcessService {
     private DespachoRepository despachoRepository;
     @Autowired
     private IActuacionService actuacionService;
+
+    @Value("${api.estadoproceso.retirado")
+    private String estadoRetirado;
 
 
     @Transactional
@@ -85,7 +89,7 @@ public class ProcessService implements IProcessService {
         if (proceso == null) {
             return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
         }
-        EstadoProceso estadoProceso = estadoProcesoRepository.findByNombre("Retirado");
+        EstadoProceso estadoProceso = estadoProcesoRepository.findByNombre(estadoRetirado);
         proceso.setEliminado('S');
         proceso.setEstadoproceso(estadoProceso);
         processRepository.save(proceso);
@@ -119,8 +123,18 @@ public class ProcessService implements IProcessService {
     @Override
     public ResponseEntity<?> findProcessByAbogadoFilter(Integer abogadoId, String fechaInicioStr, String fechaFinStr, List<String> estadosProceso, String tipoProceso, Integer page, Integer size) {
 
+        LocalDate fechaInicio = null;
+        LocalDate fechaFin = null;
+
+        if (fechaInicioStr != null && !fechaInicioStr.isEmpty()) {
+            fechaInicio = LocalDate.parse(fechaInicioStr);
+        }
+        if (fechaFinStr != null && !fechaFinStr.isEmpty()) {
+            fechaFin = LocalDate.parse(fechaFinStr);
+        }
+
         Pageable paging = PageRequest.of(page, size);
-        Page<Proceso> pageProcesosAbogado = processRepository.findAllByAbogado(abogadoId, fechaInicioStr, fechaFinStr, estadosProceso, tipoProceso, paging);
+        Page<Proceso> pageProcesosAbogado = processRepository.findAllByAbogado(abogadoId, fechaInicio, fechaFin, estadosProceso, tipoProceso, paging);
 
         PageableResponse<Proceso> response = PageableResponse.<Proceso>builder()
                 .data(pageProcesosAbogado.getContent())
@@ -223,11 +237,7 @@ public class ProcessService implements IProcessService {
 
     @Override
     public ResponseEntity<?> findProcessByRadicado(String radicado) {
-        Proceso proceso = processRepository.findByRadicado(radicado);
-        if (proceso == null) {
-            return new ResponseEntity<>("Proceso no encontrado", HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(proceso, HttpStatus.OK);
+        return new ResponseEntity<>(processRepository.findByRadicado(radicado), HttpStatus.OK);
     }
 
     @Override
@@ -238,6 +248,11 @@ public class ProcessService implements IProcessService {
     @Override
     public ResponseEntity<?> findDespachoByName(String name) {
         return new ResponseEntity<>(despachoRepository.findDespachoByNombre(name), HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?>  findAllDespachosWithDateActuacion(){
+        return new ResponseEntity<>(despachoRepository.findAllDespachosWithDateActuacion(), HttpStatus.OK);
     }
 
 }

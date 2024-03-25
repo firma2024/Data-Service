@@ -1,7 +1,7 @@
 CREATE TABLE Actuacion (
   id                int(10) NOT NULL AUTO_INCREMENT,
   actuacion         varchar(255) NOT NULL,
-  anotacion         varchar(455),
+  anotacion         varchar(900),
   fechaactuacion    date NOT NULL,
   fecharegistro     date NOT NULL,
   documento         longblob,
@@ -14,7 +14,7 @@ CREATE TABLE Actuacion (
   PRIMARY KEY (id));
 CREATE TABLE Audiencia (
   id        int(10) NOT NULL AUTO_INCREMENT,
-  enlace    varchar(255) NOT NULL,
+  enlace    varchar(900) NOT NULL,
   procesoid int(10) NOT NULL,
   nombre    varchar(255) NOT NULL,
   PRIMARY KEY (id));
@@ -57,9 +57,9 @@ CREATE TABLE Proceso (
   id                  int(10) NOT NULL AUTO_INCREMENT,
   radicado            varchar(255) NOT NULL UNIQUE,
   numeroproceso       bigint(19) NOT NULL UNIQUE,
-  sujetos           varchar(255) NOT NULL,
+  sujetos           varchar(455) NOT NULL,
   fecharadicado       date NOT NULL,
-  ubicacionexpediente varchar(255) NOT NULL,
+  ubicacionexpediente varchar(255),
   eliminado           char(255) NOT NULL,
   empleadoid          int(10) NOT NULL,
   firmaid             int(10) NOT NULL,
@@ -91,12 +91,12 @@ CREATE TABLE TipoProceso (
 CREATE TABLE Usuario (
   id              int(10) NOT NULL AUTO_INCREMENT,
   username        varchar(255) NOT NULL UNIQUE,
-  telefono        bigint(19) NOT NULL UNIQUE,
+  telefono        bigint(19) NOT NULL UfirmaNIQUE,
   identificacion  bigint(19) NOT NULL UNIQUE,
   nombres         varchar(255) NOT NULL,
-  eliminado           char(255) NOT NULL,
+  eliminado       char(255) NOT NULL,
   correo          varchar(255) NOT NULL UNIQUE,
-  img             blob,
+  img             longblob,
   rolid           int(10) NOT NULL,
   tipodocumentoid int(10) NOT NULL,
   PRIMARY KEY (id));

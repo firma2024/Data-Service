@@ -1,5 +1,6 @@
-package com.firma.data.service.impl;
+package com.firma.data.implService;
 
+import com.firma.data.intfService.IActuacionService;
 import com.firma.data.model.Actuacion;
 import com.firma.data.model.EstadoActuacion;
 import com.firma.data.model.RegistroCorreo;
@@ -7,7 +8,6 @@ import com.firma.data.payload.response.PageableResponse;
 import com.firma.data.repository.ActuacionRepository;
 import com.firma.data.repository.EstadoActuacionRepository;
 import com.firma.data.repository.RegistroCorreoRepository;
-import com.firma.data.service.intf.IActuacionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -46,9 +47,16 @@ public class ActuacionService implements IActuacionService {
 
     @Transactional
     @Override
-    public ResponseEntity<?> updateActuacionSend(Actuacion actuacion) {
-        actuacionRepository.save(actuacion);
-        return new ResponseEntity<>("Actuacion actualizada", HttpStatus.OK);
+    public ResponseEntity<?> updateActuacionSend(List<Integer> actuacionIds) {
+        List<Actuacion> actsUpdated = new ArrayList<>();
+        for (Integer id : actuacionIds) {
+            Actuacion actuacion = actuacionRepository.findById(id).orElse(null);
+            actuacion.setEnviado('Y');
+            actsUpdated.add(actuacion);
+        }
+
+        actuacionRepository.saveAll(actsUpdated);
+        return new ResponseEntity<>("Actuaciones actualizadas de envio", HttpStatus.OK);
     }
 
     @Override
@@ -162,6 +170,12 @@ public class ActuacionService implements IActuacionService {
     public ResponseEntity<?> saveRegistroCorreo(RegistroCorreo registroCorreo) {
         registroCorreoRepository.save(registroCorreo);
         return new ResponseEntity<>("Registro correo almacenado", HttpStatus.OK);
+    }
+
+    @Override
+    public ResponseEntity<?> updateActuacion(Actuacion actuacion) {
+        actuacionRepository.save(actuacion);
+        return new ResponseEntity<>("Actuacion actualizada", HttpStatus.OK);
     }
 
 }

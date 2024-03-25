@@ -4,7 +4,7 @@ import com.firma.data.model.Audiencia;
 import com.firma.data.model.Enlace;
 import com.firma.data.model.Proceso;
 import com.firma.data.payload.request.ProcessRequest;
-import com.firma.data.service.intf.IProcessService;
+import com.firma.data.intfService.IProcessService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -139,5 +139,10 @@ public class ProcessController {
     @GetMapping("/enlace/get")
     public ResponseEntity<?> getEnlaceByDespachoAndYear(@RequestParam Integer id, @RequestParam String year){
         return processService.findEnlaceByDespachoAndYear(id, year);
+    }
+
+    @GetMapping("/despacho/get/all/date")
+    public ResponseEntity<?> getAllDespachosWithDateActuacion(){
+        return processService.findAllDespachosWithDateActuacion();
     }
 }

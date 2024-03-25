@@ -1,4 +1,4 @@
-package com.firma.data.service.intf;
+package com.firma.data.intfService;
 
 import com.firma.data.model.Audiencia;
 import com.firma.data.model.Enlace;
@@ -32,4 +32,5 @@ public interface IProcessService {
     ResponseEntity<?> findProcessByRadicado(String radicado);
     ResponseEntity<?> findEnlaceByDespachoAndYear(Integer id, String year);
     ResponseEntity<?> findDespachoByName(String name);
+    ResponseEntity<?>  findAllDespachosWithDateActuacion();
 }

@@ -1,5 +1,6 @@
-package com.firma.data.service.impl;
+package com.firma.data.service;
 
+import com.firma.data.implService.ActuacionService;
 import com.firma.data.model.Actuacion;
 import com.firma.data.model.EstadoActuacion;
 import com.firma.data.model.RegistroCorreo;
@@ -73,7 +74,7 @@ class ActuacionServiceTest {
         Actuacion actuacion = new Actuacion();
         when(actuacionRepository.save(actuacion)).thenReturn(actuacion);
 
-        ResponseEntity<?> response = actuacionService.updateActuacionSend(actuacion);
+        ResponseEntity<?> response = actuacionService.updateActuacion(actuacion);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertEquals("Actuacion actualizada", response.getBody());
