@@ -38,7 +38,7 @@ public class ProcessService implements IProcessService {
     @Autowired
     private IActuacionService actuacionService;
 
-    @Value("${api.estadoproceso.retirado")
+    @Value("${api.estadoproceso.retirado}")
     private String estadoRetirado;
 
 
