@@ -91,7 +91,7 @@ CREATE TABLE TipoProceso (
 CREATE TABLE Usuario (
   id              int(10) NOT NULL AUTO_INCREMENT,
   username        varchar(255) NOT NULL UNIQUE,
-  telefono        bigint(19) NOT NULL UfirmaNIQUE,
+  telefono        bigint(19) NOT NULL,
   identificacion  bigint(19) NOT NULL UNIQUE,
   nombres         varchar(255) NOT NULL,
   eliminado       char(255) NOT NULL,
